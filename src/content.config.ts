@@ -16,6 +16,8 @@ const caseStudies = defineCollection({
     summary: z.string(),
     ogTitle: z.string(),
     ogSubtitle: z.string().optional(),
+    // false when header metrics are system facts, not 30-day production figures
+    showMetricsLabel: z.boolean().default(true),
   }),
 });
 

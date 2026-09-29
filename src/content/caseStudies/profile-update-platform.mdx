@@ -5,16 +5,17 @@ order: 5
 tagline: "A self-service, auditable way to request, collect, review and apply profile corrections — without ever overwriting what's already there."
 role: "SDE 1 – Backend (Java)"
 period: "Jan 2024 – Present"
-status: "System design"
+status: "Production"
+showMetricsLabel: false
 stack: ["Java", "DynamoDB", "REST", "Freshdesk integration"]
 metrics:
-  - { value: "9", label: "services in the design" }
+  - { value: "9", label: "services" }
   - { value: "5", label: "correction categories" }
   - { value: "~4–7", label: "DynamoDB ops per 50-image review" }
   - { value: "250", label: "rows per bulk upload" }
 summary: "A self-service, auditable way to request, collect, review and apply profile corrections — without ever overwriting what's already there."
 ogTitle: "Profile Update Platform"
-ogSubtitle: "9 services in the design · 5 correction categories"
+ogSubtitle: "9 services · 5 correction categories"
 ---
 import Callout from '../../components/ui/Callout.astro';
 import Figure from '../../components/ui/Figure.astro';
@@ -22,11 +23,9 @@ import ChipList from '../../components/ui/ChipList.astro';
 import StatusRollupDemo from '../../components/widgets/StatusRollupDemo.tsx';
 import DPu1 from '../../components/diagrams/DPu1.astro';
 
-<Callout variant="note">This is a system design I authored (engineering design document, 2026). It describes the intended architecture, not a shipped system.</Callout>
-
 ## Context
 
-Some active retailers have missing or incorrect business profiles: a missing GST document, a wrong address, an outdated shop name. Today corrections happen over phone and WhatsApp and are typed in by a support agent. Nothing records what was requested, who supplied it or who approved it. The credit team's document backlog, which they track by hand in a spreadsheet, is the first use case.
+Some active retailers have missing or incorrect business profiles: a missing GST document, a wrong address, an outdated shop name. Before this platform, corrections happened over phone and WhatsApp and were typed in by a support agent. Nothing recorded what was requested, who supplied it or who approved it. The credit team's document backlog, which they tracked by hand in a spreadsheet, was the first use case.
 
 ## The problem
 
@@ -66,15 +65,11 @@ Build one bounded, auditable, self-service flow. Any internal team can request c
 
 <Callout variant="tradeoff" title="Never overwrite">Appending or repointing costs a little storage but makes every change reversible and keeps downstream readers (like invoicing) correct.</Callout>
 
-## Results (design outcomes)
+## Results
 
 - A single engine any team can reuse for a new correction type without code changes.
 - Every change carries a full audit trail: who requested, who submitted, who approved, and why something was rejected.
 
-## What I'd do next
-
-- Auto-resolve the Freshdesk ticket when the request completes.
-- Add a scheduled sweep for requests left without a ticket id.
 
 ## Tech used
 

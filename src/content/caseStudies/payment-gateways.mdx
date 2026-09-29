@@ -66,11 +66,6 @@ Each gateway has its own API, statuses, hashing or signing, callback format and 
 - **~325K** Razorpay webhook events/month and **~18K** PayU callbacks/month processed.
 - **~130K** PayU hash-signing requests/month served at 100% availability.
 
-## What I'd do next
-
-- Make every webhook path verify the gateway's signature and bind the paid amount and order id to our transaction before accepting it. That is the next hardening step for the whole gateway layer.
-- Replace the lock's check-then-set with an atomic `SET NX PX` plus token-checked release.
-- Move polling off the request thread.
 
 ## Tech used
 

@@ -57,11 +57,6 @@ These are money-moving events. A lost or reordered message can mean an unreconci
 - The reconciliation pipeline (**~800K messages/month**) runs on SQS at **99.94%** consumer success.
 - Payment and credit streams migrated with **zero downtime** and a **config-only rollback** path.
 
-## What I'd do next
-
-- Use deterministic idempotency keys on every stream.
-- Keep dead-letter queue (DLQ) and visibility-timeout settings in infrastructure-as-code next to the code.
-- Add a transactional outbox so events publish only after the DB commit.
 
 ## Tech used
 

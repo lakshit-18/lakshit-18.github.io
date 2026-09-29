@@ -18,7 +18,7 @@ function stage(pct: number): { label: string; tone: Tone } {
   if (pct === 0) return { label: 'Before', tone: 'muted' };
   if (pct <= 20) return { label: 'Canary', tone: 'info' };
   if (pct < 100) return { label: 'Ramp', tone: 'warn' };
-  return { label: 'Cut over — next: remove fallback in a separate PR', tone: 'success' };
+  return { label: 'Cut over — fallback removed in a separate PR', tone: 'success' };
 }
 
 export default function CanarySlider() {

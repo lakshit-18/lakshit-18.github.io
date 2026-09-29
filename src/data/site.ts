@@ -70,7 +70,7 @@ export const workCards = [
   {
     slug: 'profile-update-platform',
     title: 'Profile Update Platform',
-    status: 'System design',
+    status: 'Production',
     tagline: 'A self-service, auditable KYC and profile-correction platform across 9 services.',
     chips: ['9 services', '~4–7 ops / review'],
     stack: 'DynamoDB · Java',

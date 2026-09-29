@@ -47,11 +47,6 @@ When all of them stayed flat, we went to 100%. Only after a clean period at 100%
 
 One stream published a bare JSON array on SQS, while the consumer endpoint expected an object. On the old bus a wrapper had hidden the difference. The canary caught it quickly, because consumer errors rose on exactly the percentage we had routed. The fix was to make the contract explicit, an object with a named list field, and to accept both shapes during the transition. Lesson: **a transport migration is a contract change.** Test it with real production payloads, not hand-written samples.
 
-## What I'd add next time
-
-- **Deterministic idempotency keys** for every stream, derived from the business event rather than generated randomly, so consumer deduplication is reliable.
-- **Dead-letter queues and visibility timeouts in infrastructure-as-code**, reviewed alongside the producer change.
-- **A transactional outbox**, so an event is published only if the database transaction that produced it committed.
 
 ## Results
 

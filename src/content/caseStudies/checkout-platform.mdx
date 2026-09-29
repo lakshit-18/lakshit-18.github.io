@@ -65,11 +65,6 @@ A checkout is a long, multi-step, cross-service transaction with real money in t
 - **~32K split-payment sessions/month** at **99.1%** success.
 - Zero double-charges on retry by design: every step either resumes from its checkpoint or is blocked by the idempotency record.
 
-## What I'd do next
-
-- Add optimistic locking on the checkout row, so two concurrent completions are serialized by the database rather than by application checks.
-- Write the transition and its snapshot in a single transaction.
-- Move completion onto an outbox + worker model, so the app never waits on the gateway round-trip.
 
 ## Tech used
 
