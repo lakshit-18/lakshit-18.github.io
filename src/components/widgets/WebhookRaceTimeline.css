@@ -1,0 +1,17 @@
+.wrt-controls { margin-bottom: 12px; }
+.wrt-select { display: inline-flex; align-items: center; gap: 8px; }
+.wrt-select select {
+  min-height: 36px; padding: 0 10px; border-radius: 8px; max-width: 100%;
+  border: 1px solid var(--border); background: var(--bg-elev); color: var(--text);
+}
+.wrt-svg { display: block; width: 100%; min-width: 540px; height: auto; font-family: var(--font-mono); }
+.wrt-lane { fill: var(--text-muted); font-size: 11px; font-weight: 600; }
+.wrt-track { stroke: var(--border); stroke-width: 1.5; }
+.wrt-axis { stroke: var(--text-faint); stroke-width: 1.5; }
+.wrt-tick { fill: var(--text-faint); font-size: 10px; }
+.wrt-head { stroke: var(--accent); stroke-width: 1.5; stroke-dasharray: 3 3; }
+.wrt-ev circle { fill: currentColor; stroke: var(--bg-sunk); stroke-width: 2; }
+.wrt-ev text { fill: var(--text); font-size: 10.5px; }
+.wrt-cur circle { stroke: var(--accent); stroke-width: 2.5; }
+.wrt-result { margin: 10px 0 8px; }
+.wrt-log { margin: 0; padding-left: 1.4em; font-size: var(--fs-micro); line-height: 1.7; color: var(--text); }

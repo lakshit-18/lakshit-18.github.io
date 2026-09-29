@@ -1,0 +1,12 @@
+---
+import Chip from './Chip.astro';
+interface Props { items: string[]; label?: string }
+const { items, label } = Astro.props;
+---
+<ul class="chiplist" aria-label={label}>
+  {items.map((i) => <li><Chip>{i}</Chip></li>)}
+</ul>
+<style>
+  .chiplist { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+  .chiplist li { margin: 0 !important; }
+</style>

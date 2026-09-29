@@ -1,0 +1,60 @@
+---
+title: "Where duplicate orders come from — and how idempotency stops them"
+slug: "idempotency-in-payments"
+description: "The app and the payment gateway both want to finish your checkout. Here's how to make sure only one of them does."
+date: 2026-09-29
+tags: ["payments", "idempotency", "distributed-systems"]
+draft: false
+---
+import Figure from '../../components/ui/Figure.astro';
+import IdempotencyGateDemo from '../../components/widgets/IdempotencyGateDemo.tsx';
+
+Every payment engineer eventually meets the same bug: a customer paid once, and two orders exist. Or the customer paid, and no order exists. Both usually have the same root cause. More than one actor is allowed to finish the same piece of work, and nothing decides which one wins.
+
+## Two actors, one checkout
+
+In a typical mobile checkout, the app sends the user to a payment gateway. When the payment succeeds, two things happen at nearly the same moment:
+
+1. The app comes back from the payment screen and calls your backend: "payment done, complete my checkout."
+2. The gateway sends a server-to-server webhook: "payment captured for order X."
+
+Both are legitimate. The webhook exists because the app can't be trusted to come back: the user may kill it, lose network, or close the browser. But now you have two requests racing to do the same work. Add mobile retries (the user taps again) and gateway retries (webhooks are delivered at-least-once), and three or four requests for one checkout is normal.
+
+## Idempotency, precisely
+
+An operation is idempotent if doing it more than once has the same effect as doing it once. "Create order" is not naturally idempotent. Each call creates a new row. You have to make it idempotent by giving the operation an identity and remembering that you've already done it.
+
+Three ingredients matter:
+
+- **A stable key.** Something that is the same for every attempt at the same logical operation. For order creation, the cart is a good key: one cart should produce at most one order.
+- **An atomic "claim".** The first attempt must claim the key in a single step that cannot interleave with another attempt. A read-then-write ("does an order exist? no → create one") is not atomic. Two requests can both read "no".
+- **A defined answer for the loser.** The second attempt should get the original result (replay), or a clear "in progress, try again", never a second side effect.
+
+## Claiming a key atomically
+
+In our checkout, order placement first writes a record keyed on the cart id using a DynamoDB conditional put: "write this item only if no item with this key exists". DynamoDB evaluates the condition and the write as one atomic operation, so exactly one request wins. The record carries a TTL (15 minutes in our case), which bounds storage and matches the realistic retry window. The request that loses the claim looks up the order created by the winner and returns it. If the winner hasn't saved the order yet, it returns a conflict and the caller retries shortly.
+
+The same idea works with a relational unique index (insert a row with a unique key and catch the duplicate-key error) or with Redis `SET key value NX PX ttl`. The important part is that the claim is atomic, not which store you use.
+
+<Figure caption="Three concurrent 'place order' requests hit the same cart. With the gate on, one claims the key and the others replay its order."><IdempotencyGateDemo client:visible /></Figure>
+
+## Idempotency is per step, not per request
+
+A checkout is several steps: create a payment session, confirm payment, place the order, record what is still owed. Making only the last step idempotent isn't enough. If the process crashes between "payment confirmed" and "order placed", a retry must not re-run the payment step.
+
+We solved this with **checkpoints**. Every significant step writes a snapshot of its result. On retry, a step first checks for its snapshot and, if one exists, returns it instead of redoing the work. Combined with an explicit state machine (so a checkout can only move forward along allowed transitions), a retry simply resumes where the last attempt stopped.
+
+## Don't let late messages move you backwards
+
+Idempotency protects against duplicates, but ordering bites too. A "payment pending" webhook can arrive after "payment successful". The fix is a **terminal-state guard**: once a payment is in a terminal state (successful, failed, refunded), a later message cannot move it to a non-terminal one. Store the raw message for audit, and ignore it for state.
+
+## A checklist
+
+- Name the logical operation and pick a key that is identical across all attempts.
+- Claim the key atomically: conditional put, unique index, or `SET NX`.
+- Decide what the loser receives: replay the result, or a retryable conflict.
+- Checkpoint multi-step flows so retries resume instead of repeating.
+- Guard terminal states against late or out-of-order messages.
+- Size TTLs above your real retry horizon, and alert on anything that arrives after it.
+
+None of this is exotic. Most duplicate-order bugs come from assuming only one actor will ever finish the work. In payments, assume there are always at least two.

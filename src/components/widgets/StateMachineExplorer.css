@@ -1,0 +1,41 @@
+.sme-controls { margin-bottom: 12px; }
+.sme-graph { margin: 0 -4px; padding: 0 4px; }
+.sme-graph svg { display: block; width: 100%; height: auto; font-family: var(--font-mono); }
+.sme-edge { fill: none; stroke: var(--text-faint); stroke-width: 1.5; transition: opacity 150ms ease, stroke 150ms ease; }
+.sme-edge-on { stroke: var(--accent); stroke-width: 2; }
+.sme-head { fill: var(--text-faint); }
+.sme-head-on { fill: var(--accent); }
+.sme-node { cursor: pointer; outline: none; transition: opacity 150ms ease; }
+.sme-node rect { fill: var(--bg-elev); stroke: var(--text-muted); stroke-width: 1.5; }
+.sme-node .sme-inner { fill: none; stroke-width: 1; }
+.sme-node text { fill: var(--text); font-size: 12px; font-weight: 600; pointer-events: none; }
+.sme-start rect { stroke: var(--info); }
+.sme-happy rect { stroke: var(--success); }
+.sme-failure rect { stroke: var(--danger); stroke-dasharray: 5 3; }
+.sme-terminal rect { stroke: var(--text-muted); }
+.sme-node:hover rect { fill: var(--bg-sunk); }
+.sme-selected rect:first-of-type { fill: var(--accent-weak); stroke: var(--accent); stroke-width: 2.5; }
+.sme-next rect:first-of-type { stroke-width: 2; }
+.sme-node:focus-visible rect:first-of-type { stroke: var(--accent); stroke-width: 3; }
+.sme-dim { opacity: 0.28; }
+.sme-legend { margin: 10px 0 14px; color: var(--text-muted); font-size: var(--fs-micro); gap: 6px 16px; }
+.sme-legend li { display: inline-flex; align-items: center; gap: 6px; }
+.sme-key { display: inline-block; width: 18px; height: 11px; border-radius: 3px; border: 1.5px solid var(--text-muted); }
+.sme-key-start { border-color: var(--info); }
+.sme-key-happy { border-color: var(--success); }
+.sme-key-failure { border-color: var(--danger); border-style: dashed; }
+.sme-key-terminal { border-style: double; border-width: 3px; }
+.sme-panels { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+.sme-name { font-weight: 700; word-break: break-all; }
+.sme-kind { margin: 6px 0; }
+.sme-desc { margin: 6px 0 10px; }
+.sme-sub { font-size: var(--fs-micro); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px; }
+.sme-nextlist { display: flex; flex-direction: column; gap: 6px; }
+.sme-nextbtn { font-family: var(--font-mono); font-size: 0.72rem; justify-content: flex-start; text-align: left; width: 100%; word-break: break-all; min-height: 32px; }
+.sme-checks li { display: flex; gap: 8px; align-items: baseline; line-height: 1.6; }
+.sme-glyph { width: 1em; flex: none; font-family: var(--font-mono); }
+.sme-all { margin-top: 12px; }
+.sme-all summary { cursor: pointer; color: var(--text-muted); }
+.sme-alllist { margin: 8px 0 0; padding-left: 1.2em; font-size: var(--fs-micro); line-height: 1.6; }
+.sme-alllist .wg-mono { word-break: break-all; }
+@media (prefers-reduced-motion: reduce) { .sme-edge, .sme-node { transition: none; } }

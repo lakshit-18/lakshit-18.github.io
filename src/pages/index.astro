@@ -1,0 +1,35 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Hero from '../components/home/Hero.astro';
+import ImpactStrip from '../components/home/ImpactStrip.astro';
+import WorkGrid from '../components/home/WorkGrid.astro';
+import ProjectCard from '../components/home/ProjectCard.astro';
+import WritingList from '../components/home/WritingList.astro';
+import Skills from '../components/home/Skills.astro';
+import Achievements from '../components/home/Achievements.astro';
+import Contact from '../components/home/Contact.astro';
+import { site } from '../data/site';
+
+const person = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: site.name,
+  jobTitle: site.jobTitle,
+  worksFor: { '@type': 'Organization', name: site.employer },
+  address: { '@type': 'PostalAddress', addressLocality: 'Bengaluru', addressCountry: 'IN' },
+  email: `mailto:${site.email}`,
+  telephone: '+918905499569',
+  url: site.url,
+  sameAs: [site.linkedin, site.github],
+};
+---
+<BaseLayout jsonLd={person}>
+  <Hero />
+  <ImpactStrip />
+  <WorkGrid />
+  <ProjectCard />
+  <WritingList />
+  <Skills />
+  <Achievements />
+  <Contact />
+</BaseLayout>

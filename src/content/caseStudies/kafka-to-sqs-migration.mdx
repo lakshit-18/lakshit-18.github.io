@@ -1,0 +1,68 @@
+---
+title: "Kafka → AWS SQS/SNS Migration"
+slug: "kafka-to-sqs-migration"
+order: 4
+tagline: "Moving live payment and credit events to a new bus, with zero downtime and a rollback that is only a config change."
+role: "SDE 1 – Backend (Java)"
+period: "Jan 2024 – Present"
+status: "Production"
+stack: ["Kafka", "AWS SQS", "AWS SNS", "AWS Lambda", "Ansible", "Java"]
+metrics:
+  - { value: "~800K", label: "messages / month on the migrated reconciliation pipeline" }
+  - { value: "99.94%", label: "consumer success" }
+  - { value: "10–20% → 100%", label: "canary ramp" }
+  - { value: "0", label: "downtime" }
+summary: "Moving live payment and credit events to a new bus, with zero downtime and a rollback that is only a config change."
+ogTitle: "Kafka → AWS SQS/SNS Migration"
+ogSubtitle: "~800K messages / month on the migrated reconciliation pipeline · 99.94% consumer success"
+---
+import Callout from '../../components/ui/Callout.astro';
+import Figure from '../../components/ui/Figure.astro';
+import ChipList from '../../components/ui/ChipList.astro';
+import CanarySlider from '../../components/widgets/CanarySlider.tsx';
+import DMig1 from '../../components/diagrams/DMig1.astro';
+
+## Context
+
+Our services published domain events (payment reconciliation, transaction conveyance, credit and charge calculations, order status) on an in-house Kafka-based event bus. The organization standardized on AWS SQS/SNS: SQS for point-to-point work queues, SNS for fan-out.
+
+## The problem
+
+These are money-moving events. A lost or reordered message can mean an unreconciled payment or a wrong interest calculation. The migration had to happen live, stream by stream, with instant rollback and without changing consumer behavior.
+
+## Design
+
+- **Per-event traffic split.** Each event has a config key for the percentage of traffic sent to SQS. The producer rolls a random number per publish: below the threshold goes to SQS, otherwise to Kafka.
+- **SQS-first with automatic fallback.** If an SQS publish throws, the same event is published to Kafka in the catch block. No event is dropped because the new path failed.
+- **Canary ramp.** Start at 10–20%, watch consumer success, queue depth and fallback counts, then ramp to 100%. Remove the split and fallback in a separate cleanup PR.
+- **Config-only rollback.** The percentages live in Ansible-managed config, so rolling back is a config change and restart, not a code deploy.
+- **Ordering where it matters.** Events that must be processed in order use **SQS FIFO queues with message-group ids**, per credit line or per order, with deduplication ids. Other streams stay on standard queues for throughput.
+- **Consumer compatibility.** Consumers receive messages through a Lambda-to-HTTP bridge that calls their existing endpoints. The legacy idempotency, group and transaction-id headers are carried over, so consumers run unchanged.
+- **Naming convention:** `<Env>_<Producer>_<Consumer>_<Event>_<UseCase>[.fifo]`.
+
+<Figure caption="Drag the split. Failed SQS publishes fall back to Kafka, so nothing is dropped."><CanarySlider client:visible /></Figure>
+
+<Figure caption="Before and after: Kafka topic vs SNS/SQS fan-out"><DMig1 /></Figure>
+
+## Key decisions & trade-offs
+
+<Callout variant="tradeoff" title="Fallback at the call site">It's simple and explicit, and the trade-off is a little duplicated logic per event, which is why the cleanup PR matters.</Callout>
+
+<Callout variant="lesson" title="The payload-contract bug">One stream published a bare JSON array on SQS while consumers expected an object. We fixed the consumer contract to accept an object wrapper and aligned both transports. Lesson: treat the transport switch as a contract change and test with real payloads.</Callout>
+
+<Callout variant="tradeoff" title="FIFO only where needed">FIFO caps throughput per message group, so it is reserved for streams where order changes the result.</Callout>
+
+## Results
+
+- The reconciliation pipeline (**~800K messages/month**) runs on SQS at **99.94%** consumer success.
+- Payment and credit streams migrated with **zero downtime** and a **config-only rollback** path.
+
+## What I'd do next
+
+- Use deterministic idempotency keys on every stream.
+- Keep dead-letter queue (DLQ) and visibility-timeout settings in infrastructure-as-code next to the code.
+- Add a transactional outbox so events publish only after the DB commit.
+
+## Tech used
+
+<ChipList items={["Apache Kafka", "AWS SQS (standard + FIFO)", "AWS SNS", "AWS Lambda", "Ansible", "Java", "Datadog"]} label="Tech used" />

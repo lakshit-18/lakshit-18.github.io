@@ -1,0 +1,43 @@
+---
+import Monogram from './Monogram.astro';
+import ThemeToggle from './ThemeToggle.astro';
+import MobileNav from './MobileNav.astro';
+import Icon from '../icons/Icon.astro';
+import { nav, site } from '../../data/site';
+---
+<header class="site-header" data-header>
+  <div class="container hdr">
+    <a href="/" class="brand">
+      <Monogram />
+      <span class="brand-name">{site.name}</span>
+    </a>
+    <nav class="desk-nav" aria-label="Primary">
+      <ul>
+        {nav.map((n) => <li><a href={n.href}>{n.label}</a></li>)}
+      </ul>
+      <a href={site.resumePath} download={site.resumeFilename} class="btn btn-outline resume-btn">
+        Resume <Icon name="download" size={16} />
+      </a>
+      <ThemeToggle />
+    </nav>
+    <MobileNav />
+  </div>
+</header>
+<style>
+  .site-header { position: sticky; top: 0; z-index: 50; height: var(--header-h); background: color-mix(in srgb, var(--bg) 78%, transparent); backdrop-filter: saturate(160%) blur(12px); -webkit-backdrop-filter: saturate(160%) blur(12px); border-bottom: 1px solid transparent; transition: border-color 150ms ease; }
+  .site-header.scrolled { border-bottom-color: var(--border); }
+  .hdr { height: 100%; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+  .brand { display: inline-flex; align-items: center; gap: 10px; color: var(--text); font-weight: 650; text-decoration: none !important; min-height: 44px; }
+  .desk-nav { display: none; align-items: center; gap: 8px; }
+  .desk-nav ul { display: flex; list-style: none; margin: 0 8px 0 0; padding: 0; gap: 4px; }
+  .desk-nav ul a { display: inline-flex; align-items: center; min-height: 44px; padding: 0 12px; color: var(--text-muted); font-size: 0.9375rem; font-weight: 500; border-radius: 8px; }
+  .desk-nav ul a:hover { color: var(--text); text-decoration: none; }
+  .resume-btn { min-height: 40px; padding: 0 14px; font-size: 0.875rem; }
+  @media (min-width: 900px) { .desk-nav { display: flex; } }
+</style>
+<script>
+  const header = document.querySelector('[data-header]');
+  const onScroll = () => header?.classList.toggle('scrolled', window.scrollY > 8);
+  onScroll();
+  window.addEventListener('scroll', onScroll, { passive: true });
+</script>

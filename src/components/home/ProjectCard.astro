@@ -1,0 +1,31 @@
+---
+import SectionHeading from '../ui/SectionHeading.astro';
+import ChipList from '../ui/ChipList.astro';
+import Icon from '../icons/Icon.astro';
+import { site } from '../../data/site';
+---
+<section id="projects" class="section container reveal" aria-labelledby="projects-h">
+  <SectionHeading id="projects-h" title="Personal project" />
+  <article class="card card-hover proj">
+    <div class="proj-head">
+      <h3 class="proj-title">ConnectHub — Microservices Backend</h3>
+      <a href={site.connecthubRepo} class="proj-gh" target="_blank" rel="noopener noreferrer" aria-label="ConnectHub on GitHub"><Icon name="github" /></a>
+    </div>
+    <p class="proj-text">A social-networking backend of 6 independently deployable microservices with Eureka discovery, an API Gateway with JWT validation, Kafka-driven async notifications, and polyglot persistence (PostgreSQL + Neo4j). Runs end to end with one Docker Compose command.</p>
+    <ChipList items={['Java', 'Spring Boot', 'Kafka', 'PostgreSQL', 'Neo4j', 'Eureka', 'JWT', 'Docker']} label="ConnectHub tech" />
+    <div class="proj-links">
+      <a href="/projects/connecthub">Read more <span class="visually-hidden">about ConnectHub</span>→</a>
+      <a href={site.connecthubRepo} target="_blank" rel="noopener noreferrer">View code <span class="visually-hidden">of ConnectHub on GitHub</span>↗</a>
+    </div>
+  </article>
+</section>
+<style>
+  .proj { display: flex; flex-direction: column; gap: 16px; }
+  .proj-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .proj-title { font-size: var(--fs-h3); }
+  .proj-gh { display: inline-grid; place-items: center; width: 44px; height: 44px; border-radius: 10px; color: var(--text-muted); }
+  .proj-gh:hover { color: var(--accent); background: var(--accent-weak); }
+  .proj-text { max-width: 72ch; }
+  .proj-links { display: flex; flex-wrap: wrap; gap: 8px 24px; font-weight: 600; font-size: var(--fs-small); }
+  .proj-links a { display: inline-flex; align-items: center; min-height: 44px; }
+</style>

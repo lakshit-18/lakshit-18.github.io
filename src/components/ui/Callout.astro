@@ -1,0 +1,24 @@
+---
+import Icon from '../icons/Icon.astro';
+interface Props { variant?: 'note' | 'tradeoff' | 'lesson'; title?: string }
+const { variant = 'note', title } = Astro.props;
+const conf = {
+  note: { icon: 'info', label: 'Note', color: 'var(--info)' },
+  tradeoff: { icon: 'scale', label: 'Trade-off', color: 'var(--accent)' },
+  lesson: { icon: 'lightbulb', label: 'Lesson', color: 'var(--warn)' },
+} as const;
+const c = conf[variant];
+---
+<aside class="callout" style={`--c:${c.color}`} role="note">
+  <div class="callout-head">
+    <Icon name={c.icon} size={18} />
+    <span>{title ?? c.label}</span>
+  </div>
+  <div class="callout-body"><slot /></div>
+</aside>
+<style>
+  .callout { border: 1px solid var(--border); border-left: 3px solid var(--c); background: var(--bg-elev); border-radius: 10px; padding: 16px 18px; }
+  .callout-head { display: flex; align-items: center; gap: 8px; color: var(--c); font-weight: 650; font-size: var(--fs-small); }
+  .callout-body { margin-top: 6px; }
+  .callout-body :global(p + p) { margin-top: 0.6em; }
+</style>

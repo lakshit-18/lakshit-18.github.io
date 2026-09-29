@@ -1,0 +1,16 @@
+---
+interface Props { caption?: string; wide?: boolean }
+const { caption, wide = false } = Astro.props;
+---
+<figure class:list={['fig', wide && 'fig-wide']}>
+  <div class="fig-canvas"><slot /></div>
+  {caption && <figcaption class="faint">{caption}</figcaption>}
+</figure>
+<style>
+  .fig { margin: 2em 0; min-width: 0; max-width: 100%; }
+  .fig-canvas { background: var(--bg-sunk); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; overflow-x: auto; }
+  /* Static diagrams keep a readable minimum size on phones and scroll inside the frame. */
+  .fig-canvas > :global(svg[role="img"]) { min-width: 600px; }
+  figcaption { font-size: var(--fs-small); margin-top: 10px; line-height: 1.5; }
+  @media (min-width: 1024px) { .fig-wide { max-width: none; } }
+</style>

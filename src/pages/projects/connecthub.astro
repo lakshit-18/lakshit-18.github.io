@@ -1,0 +1,50 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Badge from '../../components/ui/Badge.astro';
+import Button from '../../components/ui/Button.astro';
+import Figure from '../../components/ui/Figure.astro';
+import ChipList from '../../components/ui/ChipList.astro';
+import Icon from '../../components/icons/Icon.astro';
+import DCh1 from '../../components/diagrams/DCh1.astro';
+import { site } from '../../data/site';
+---
+<BaseLayout
+  title="ConnectHub — Microservices Backend"
+  description="A social-networking backend built to practise production-style microservice architecture end to end."
+  ogImage="/og/connecthub.png"
+>
+  <article class="container ch">
+    <a href="/#projects" class="back"><Icon name="arrow-left" size={16} /> Back to home</a>
+    <div class="ch-badge"><Badge status="Personal project" /></div>
+    <h1 class="ch-title">ConnectHub — Microservices Backend</h1>
+    <div class="ch-links">
+      <Button href={site.connecthubRepo} variant="outline" icon="github" external>View code on GitHub ↗</Button>
+    </div>
+    <div class="prose ch-body">
+      <h2 id="overview">Overview</h2>
+      <p>A social-networking backend built to practise production-style microservice architecture end to end.</p>
+      <h2 id="architecture">Architecture</h2>
+      <p>6 independently deployable services — User, Posts, Connections, Notification, API Gateway, Discovery Server.</p>
+      <Figure caption="ConnectHub services, discovery, messaging and data stores"><DCh1 /></Figure>
+      <h2 id="highlights">Highlights</h2>
+      <ul>
+        <li><strong>Service discovery &amp; routing:</strong> Netflix Eureka for discovery; the API Gateway handles routing, load balancing and JWT validation, and passes user context to downstream services in headers.</li>
+        <li><strong>Event-driven notifications:</strong> Apache Kafka topics (post-created, post-liked, connection-request) decouple the Notification service for fault tolerance and independent scaling.</li>
+        <li><strong>Polyglot persistence:</strong> PostgreSQL for relational data, Neo4j for the connection graph. Database-per-service, with OpenFeign for synchronous calls.</li>
+        <li><strong>Security:</strong> stateless JWT authentication, BCrypt password hashing.</li>
+        <li><strong>One-command setup:</strong> Docker Compose runs all 6 services plus PostgreSQL, Neo4j and Kafka.</li>
+      </ul>
+      <h2 id="tech-used">Tech used</h2>
+      <ChipList label="Tech used" items={['Java', 'Spring Boot', 'Spring Cloud (Eureka, Gateway, OpenFeign)', 'Kafka', 'PostgreSQL', 'Neo4j', 'JWT', 'Docker Compose']} />
+    </div>
+  </article>
+</BaseLayout>
+<style>
+  .ch { padding-block: 48px 96px; }
+  .back { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; color: var(--text-muted); font-size: var(--fs-small); }
+  .back:hover { color: var(--accent); }
+  .ch-badge { margin-top: 16px; }
+  .ch-title { font-size: var(--fs-h1); margin-top: 14px; }
+  .ch-links { margin-top: 24px; }
+  .ch-body { margin-top: 16px; }
+</style>

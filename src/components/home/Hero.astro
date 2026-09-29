@@ -1,0 +1,62 @@
+---
+import Button from '../ui/Button.astro';
+import Icon from '../icons/Icon.astro';
+import { site } from '../../data/site';
+---
+<section class="hero container" aria-labelledby="hero-title">
+  <div class="hero-copy">
+    <p class="micro eyebrow">BACKEND SOFTWARE ENGINEER · BENGALURU</p>
+    <h1 id="hero-title" class="hero-title">Lakshit Lohar</h1>
+    <p class="hero-sub muted">I build payment systems that don't double-charge.</p>
+    <p class="hero-body">
+      Backend engineer at Standard Chartered Research and Technology (SOLV) with 2+ years building high-reliability checkout and payment systems on Java microservices — checkpoint-resumable checkout, PayU and Razorpay integrations, reconciliation, and a zero-downtime Kafka → AWS SQS/SNS migration.
+    </p>
+    <div class="hero-cta">
+      <Button href="#work" variant="primary" size="lg">View my work</Button>
+      <Button href={site.resumePath} download={site.resumeFilename} variant="outline" size="lg" icon="download">Download resume</Button>
+    </div>
+    <ul class="hero-contact">
+      <li><a href={`mailto:${site.email}`}><Icon name="mail" size={16} />{site.email}</a></li>
+      <li><a href={site.phoneTel}><Icon name="phone" size={16} />{site.phoneDisplay}</a></li>
+      <li><a href={site.linkedin} target="_blank" rel="noopener noreferrer"><Icon name="linkedin" size={16} />LinkedIn</a></li>
+      <li><a href={site.github} target="_blank" rel="noopener noreferrer"><Icon name="github" size={16} />GitHub</a></li>
+    </ul>
+  </div>
+  <div class="hero-art" aria-hidden="true">
+    <svg viewBox="0 0 320 320" width="320" height="320" fill="none">
+      <g stroke="var(--border)" stroke-width="1.5">
+        <path d="M60 80 L160 60 L260 110 L220 230 L100 240 Z" />
+        <path d="M160 60 L220 230" />
+        <path d="M60 80 L220 230" opacity=".5" />
+      </g>
+      <g stroke="var(--accent)" stroke-width="1.5" opacity=".55">
+        <path d="M60 80 L160 60 L260 110" />
+      </g>
+      <g font-family="var(--font-mono)">
+        <circle cx="60" cy="80" r="9" fill="var(--bg-elev)" stroke="var(--text-faint)" stroke-width="1.5" />
+        <circle cx="160" cy="60" r="9" fill="var(--bg-elev)" stroke="var(--text-faint)" stroke-width="1.5" />
+        <circle cx="220" cy="230" r="9" fill="var(--bg-elev)" stroke="var(--text-faint)" stroke-width="1.5" />
+        <circle cx="100" cy="240" r="9" fill="var(--bg-elev)" stroke="var(--text-faint)" stroke-width="1.5" />
+        <circle class="pulse" cx="260" cy="110" r="18" fill="var(--accent)" opacity=".18" />
+        <circle cx="260" cy="110" r="9" fill="var(--accent)" />
+      </g>
+    </svg>
+  </div>
+</section>
+<style>
+  .hero { display: grid; gap: 48px; padding-block: 96px 72px; align-items: center; }
+  @media (min-width: 1024px) { .hero { grid-template-columns: 1fr 320px; padding-block: 128px 96px; } }
+  .eyebrow { color: var(--accent); }
+  .hero-title { font-size: var(--fs-display); margin-top: 16px; letter-spacing: -0.035em; line-height: 1.02; }
+  .hero-sub { font-size: var(--fs-h2); font-weight: 600; margin-top: 16px; line-height: 1.25; letter-spacing: -0.015em; }
+  .hero-body { max-width: 60ch; margin-top: 24px; color: var(--text); }
+  .hero-cta { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 32px; }
+  .hero-contact { display: flex; flex-wrap: wrap; gap: 4px 20px; list-style: none; padding: 0; margin: 28px 0 0; font-size: var(--fs-small); }
+  .hero-contact a { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; color: var(--text-muted); }
+  .hero-contact a:hover { color: var(--accent); }
+  .hero-art { display: none; }
+  @media (min-width: 1024px) { .hero-art { display: block; } }
+  .pulse { transform-origin: 260px 110px; animation: pulse 2.4s ease-out infinite; }
+  @keyframes pulse { 0% { transform: scale(.6); opacity: .35; } 100% { transform: scale(1.6); opacity: 0; } }
+  @media (prefers-reduced-motion: reduce) { .pulse { animation: none; } }
+</style>

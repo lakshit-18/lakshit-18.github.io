@@ -1,0 +1,62 @@
+---
+title: "Reconciliation & Failover"
+slug: "reconciliation-and-failover"
+order: 3
+tagline: "Webhooks get lost and gateways go down. This is how payments still end up correct."
+role: "SDE 1 – Backend (Java)"
+period: "Jan 2024 – Present"
+status: "Production"
+stack: ["Java", "AWS SQS", "MySQL", "Datadog"]
+metrics:
+  - { value: "~800K", label: "reconciliation checks / month" }
+  - { value: "99.94%", label: "reconciliation success" }
+  - { value: "±1 paisa", label: "amount tolerance" }
+  - { value: "15 min", label: "late-callback P0 threshold" }
+summary: "Webhooks get lost and gateways go down. This is how payments still end up correct."
+ogTitle: "Reconciliation & Failover"
+ogSubtitle: "~800K reconciliation checks / month · 99.94% reconciliation success"
+---
+import Callout from '../../components/ui/Callout.astro';
+import Figure from '../../components/ui/Figure.astro';
+import ChipList from '../../components/ui/ChipList.astro';
+import CircuitBreakerSim from '../../components/widgets/CircuitBreakerSim.tsx';
+import DRec1 from '../../components/diagrams/DRec1.astro';
+
+## Context
+
+Even with good webhooks, some payments end up "stuck": initiated or processing on our side, but resolved at the gateway. Refunds can sit in "refund initiated" too. And gateways have outages, sometimes exactly when delivery agents are collecting payments at a retailer's door.
+
+## The problem
+
+A stuck payment means either a customer who paid and sees "failed", or an order waiting on money that already arrived. A gateway outage during delivery means agents cannot collect at all.
+
+## Design
+
+- **Reconciliation sweep.** A scheduled job selects transactions in INITIATED, PROCESSING or REFUND_INITIATED status within a time window. It fans them out as individual messages on an SQS queue, and a consumer re-checks each with the gateway and completes, fails or updates it.
+- **Amount checks.** The amount reported by the gateway must match ours to **±1 paisa** (to absorb rounding), or the transaction is flagged.
+- **P0 alerting.** Late authorizations (>15 minutes) and orders showing both a success and a refund page the on-call engineer.
+- **Circuit breaker with failover.** A breaker wraps the primary gateway for delivery-time collections. When failures cross a threshold it opens and new collection requests fail over to **Cashfree**. After a cool-down it half-opens to probe recovery, then closes again.
+
+<Figure caption="Closed → open → half-open → closed. While open, delivery collections route to the backup gateway."><CircuitBreakerSim client:visible /></Figure>
+
+<Figure caption="Reconciliation fan-out"><DRec1 /></Figure>
+
+## Key decisions & trade-offs
+
+<Callout variant="tradeoff" title="Fan out through a queue, not a loop">Each transaction is an independent message, so one slow gateway call cannot stall the whole run, and retries are per transaction.</Callout>
+
+<Callout variant="tradeoff" title="Fail over only delivery collections">Checkout keeps its primary gateway, so reconciliation stays simple. Delivery collections, where an outage blocks people in the field, get the failover.</Callout>
+
+## Results
+
+- **~800K reconciliation checks/month** at **99.94%** success.
+- Delivery-time collections stay live through primary-gateway outages.
+
+## What I'd do next
+
+- Reconcile against daily settlement files as a second, independent source of truth.
+- Also sweep recently FAILED transactions for late successes.
+
+## Tech used
+
+<ChipList items={["Java", "AWS SQS", "MySQL", "Razorpay", "Cashfree", "Datadog"]} label="Tech used" />

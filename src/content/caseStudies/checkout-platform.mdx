@@ -1,0 +1,76 @@
+---
+title: "Checkout Platform"
+slug: "checkout-platform"
+order: 1
+tagline: "An 11-state, checkpoint-resumable checkout across 5 microservices — retries resume, they never re-charge."
+role: "SDE 1 – Backend (Java)"
+period: "Jan 2024 – Present"
+status: "Production"
+stack: ["Java 8", "Spring Boot", "Dropwizard", "MySQL", "DynamoDB", "REST"]
+metrics:
+  - { value: "~25K", label: "orders / month" }
+  - { value: "99.57%", label: "payment-to-order completion" }
+  - { value: "~50K", label: "checkout sessions / month" }
+  - { value: "~32K", label: "split-payment sessions / month (99.1% success)" }
+summary: "An 11-state, checkpoint-resumable checkout across 5 microservices — retries resume, they never re-charge."
+ogTitle: "Checkout Platform"
+ogSubtitle: "~25K orders / month · 99.57% payment-to-order completion"
+---
+import Callout from '../../components/ui/Callout.astro';
+import Figure from '../../components/ui/Figure.astro';
+import ChipList from '../../components/ui/ChipList.astro';
+import StateMachineExplorer from '../../components/widgets/StateMachineExplorer.tsx';
+import DChk1 from '../../components/diagrams/DChk1.astro';
+
+## Context
+
+Checkout is the moment a B2B retailer's cart becomes a paid, fulfillable order. On our platform, one checkout touches five services: an API gateway that the mobile app talks to, a checkout service that orchestrates the flow, a payment service that owns payment sessions and expectations, a payment-gateway service that talks to PayU and Razorpay, and an order-processing service that reserves inventory and creates the order. Customers can pay fully upfront, pay a configurable advance, or pay on delivery, and can apply their wallet (JumboCash) balance on top.
+
+## The problem
+
+A checkout is a long, multi-step, cross-service transaction with real money in the middle. Any step can fail or time out: payment-session creation, the gateway round-trip, order placement, or the post-order bookkeeping. Two different actors can also try to finish the same checkout at once — the app returning from the payment screen, and the gateway's server-to-server webhook. Without care, that gives you the two worst outcomes in commerce: a customer charged twice, or charged with no order created.
+
+## Constraints
+
+- Every step must be safely retryable. Mobile networks drop, and users tap again.
+- The flow has to support full payment, partial advance, zero advance (pay on delivery), and wallet + UPI split payments in one model.
+- Business teams change prepayment policy often (by category, customer segment, cart value) and should not need a deploy to do it.
+- The design must be debuggable after the fact: "what happened to this checkout?" needs a precise answer.
+
+## Design
+
+- **Explicit state machine.** A cart checkout moves through 11 states: initiated → payment session created → payment session successful → order placed → pending payment expectations created → completed. Each has failure and abort branches. An order-payment checkout (paying dues on an existing order) uses a smaller 7-state variant. Allowed transitions are table-driven, and every transition is appended to an **append-only transition log**, so a checkout's full history is always reconstructable.
+- **Checkpointed snapshots.** Each significant step writes a JSON snapshot: cart details, payment options, the customer's payment selection, the payment-session initiation and completion responses, the order-placement response, post-advance payment expectations, and failure details. That is **9 checkpoint types**. When a request retries, the step reads its snapshot and resumes instead of redoing work. That is what makes retries safe.
+- **Idempotent order creation.** Order placement writes a **DynamoDB conditional record keyed on the cart id with a 900-second TTL** before creating anything. A concurrent or repeated attempt sees the record and either replays the existing order or backs off. This collapses the app-callback vs webhook race into exactly one order.
+- **Config-driven prepayment rules.** A rules table targets marketplace × customer segment × category × cart value, and resolves to an advance percentage. Conflicts resolve deterministically: a 0% rule wins, otherwise the highest percentage wins, and ties go to the newest rule. Policy changes are rows, not releases.
+- **Split payments with per-item attribution.** A payment session holds one leg per instrument (UPI through the gateway, and the wallet). Payment expectations are created per cart item. An advance is allocated **pro rata** across items by what each still owes, so after the order is placed, every order item carries an exact balance due at delivery.
+- **Zero-advance fast path.** When nothing is due upfront, checkout skips the gateway entirely and places the order directly.
+
+<Figure caption="Cart checkout: 11 states. Click a state to see where it can go next."><StateMachineExplorer client:visible /></Figure>
+
+<Figure caption="Checkout request flow across 5 services"><DChk1 /></Figure>
+
+## Key decisions & trade-offs
+
+<Callout variant="tradeoff" title="Table-driven state machine over a workflow engine">A small transition table plus an append-only log was easier to reason about, test and operate than adopting a workflow framework. The trade-off: we own the rules, including making sure every failure state has a way out.</Callout>
+
+<Callout variant="tradeoff" title="JSON snapshots over normalized tables">Snapshots made resume logic trivial and schema changes cheap. The trade-off is that snapshot shapes must stay backward-compatible while old checkouts are still in flight.</Callout>
+
+<Callout variant="tradeoff" title="DynamoDB conditional write for order idempotency">A single conditional put is atomic and needs no lock service. The TTL bounds storage. The trade-off: a retry after the TTL window is no longer protected, so the window is sized well above the realistic retry horizon.</Callout>
+
+## Results
+
+- **~25K orders/month** through checkout at **99.57% payment-to-order completion** (payment-session completions that end in a placed order).
+- **~50K checkout sessions/month** initiated at **98.4%** success.
+- **~32K split-payment sessions/month** at **99.1%** success.
+- Zero double-charges on retry by design: every step either resumes from its checkpoint or is blocked by the idempotency record.
+
+## What I'd do next
+
+- Add optimistic locking on the checkout row, so two concurrent completions are serialized by the database rather than by application checks.
+- Write the transition and its snapshot in a single transaction.
+- Move completion onto an outbox + worker model, so the app never waits on the gateway round-trip.
+
+## Tech used
+
+<ChipList items={["Java 8", "Spring Boot", "Dropwizard", "MySQL", "DynamoDB", "REST", "Datadog"]} label="Tech used" />

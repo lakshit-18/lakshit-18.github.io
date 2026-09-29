@@ -1,0 +1,60 @@
+---
+title: "Migrating a message bus with canary routing and fallback"
+slug: "migrating-a-message-bus"
+description: "How we moved live payment and credit events from Kafka to AWS SQS/SNS — one stream at a time, with zero downtime and a config-only rollback."
+date: 2026-09-29
+tags: ["kafka", "aws-sqs", "migrations", "event-driven"]
+draft: false
+---
+
+Swapping the message bus under a running payments platform sounds like a weekend-long cutover with everyone on a call. It doesn't have to be. We moved payment and credit event streams from an in-house Kafka-based bus to AWS SQS/SNS gradually, with no downtime and a rollback that was just a config change.
+
+## Why migrate at all
+
+The organization standardized on AWS-managed messaging: SQS for point-to-point work queues and SNS for fan-out. Managed queues remove broker operations, integrate with IAM, and give per-queue dead-letter handling. The trade-offs are real, though. SQS has no log replay the way Kafka does, and ordering only exists within FIFO message groups. So this was not a mechanical swap. Every stream needed a decision.
+
+## Classify every stream first
+
+Before touching code, we listed every event a service published and answered three questions for each:
+
+1. **Does order matter?** Interest and charge calculations per credit line do. A reconciliation request for one transaction does not.
+2. **What's the consumer contract?** The payload shape, the headers the consumer relies on, and how it deduplicates.
+3. **What happens if a message is lost or duplicated?** This decides how careful the rollout must be.
+
+Order-sensitive streams went to **SQS FIFO** with a message-group id (the credit line or the order), so events for the same entity are processed in sequence while different entities still run in parallel. Everything else used standard queues.
+
+## The routing pattern
+
+Each event got a config key: the percentage of traffic to send to SQS. On every publish, the producer rolls a random number. Below the threshold, it publishes to SQS; otherwise it publishes to Kafka as before. If the SQS publish throws, the code falls back to Kafka in the catch block, so a problem on the new path never drops an event.
+
+Two details made this safe:
+
+- **Config lives in deployment config (Ansible), not in code.** Ramping from 20% to 100%, or back to 0%, is a config change and a restart. No build, no review cycle, no deploy of new code during an incident.
+- **Consumers didn't change.** Messages reach consumers through a Lambda bridge that calls their existing HTTP endpoints, and we carried over the legacy idempotency, group and transaction-id headers. From the consumer's point of view, only the delivery mechanism changed.
+
+## The ramp
+
+We started each stream at 10–20%. During the canary we watched:
+
+- consumer success rate on the new path
+- queue depth and oldest-message age
+- how often the Kafka fallback fired (it should be zero)
+- business-level signals, for example transactions reconciled per hour
+
+When all of them stayed flat, we went to 100%. Only after a clean period at 100% did we remove the traffic split and the fallback, in a **separate PR**. Keeping cleanup separate means the risky change and the tidy-up are never mixed.
+
+## The bug that taught us the most
+
+One stream published a bare JSON array on SQS, while the consumer endpoint expected an object. On the old bus a wrapper had hidden the difference. The canary caught it quickly, because consumer errors rose on exactly the percentage we had routed. The fix was to make the contract explicit, an object with a named list field, and to accept both shapes during the transition. Lesson: **a transport migration is a contract change.** Test it with real production payloads, not hand-written samples.
+
+## What I'd add next time
+
+- **Deterministic idempotency keys** for every stream, derived from the business event rather than generated randomly, so consumer deduplication is reliable.
+- **Dead-letter queues and visibility timeouts in infrastructure-as-code**, reviewed alongside the producer change.
+- **A transactional outbox**, so an event is published only if the database transaction that produced it committed.
+
+## Results
+
+The reconciliation pipeline now moves about 800K messages a month on SQS with 99.94% consumer success. Payment and credit streams migrated with zero downtime. At every step, rollback was a config change.
+
+A migration like this is mostly discipline: classify every stream, keep the old path as a safety net, ramp on evidence, and clean up separately.

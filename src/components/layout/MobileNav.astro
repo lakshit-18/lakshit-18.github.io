@@ -1,0 +1,71 @@
+---
+/* Mobile navigation: plain script instead of a framework island, to keep Home's JS tiny. */
+import Icon from '../icons/Icon.astro';
+import ThemeToggle from './ThemeToggle.astro';
+import { nav, site } from '../../data/site';
+---
+<div class="mnav">
+  <ThemeToggle />
+  <button type="button" class="mnav-open" aria-label="Open menu" aria-expanded="false" aria-controls="mnav-sheet" data-mnav-open>
+    <Icon name="menu" />
+  </button>
+  <div id="mnav-sheet" class="mnav-sheet" role="dialog" aria-modal="true" aria-label="Menu" hidden data-mnav-sheet>
+    <div class="mnav-top">
+      <span class="micro faint">Menu</span>
+      <button type="button" class="mnav-close" aria-label="Close menu" data-mnav-close><Icon name="x" /></button>
+    </div>
+    <nav aria-label="Mobile">
+      <ul>
+        {nav.map((n) => <li><a href={n.href} data-mnav-link>{n.label}</a></li>)}
+      </ul>
+      <a href={site.resumePath} download={site.resumeFilename} class="btn btn-primary btn-lg mnav-resume" data-mnav-link>
+        <Icon name="download" size={18} /> Download resume
+      </a>
+    </nav>
+  </div>
+</div>
+<style>
+  .mnav { display: flex; align-items: center; gap: 8px; }
+  @media (min-width: 900px) { .mnav { display: none; } }
+  .mnav-open, .mnav-close { display: inline-grid; place-items: center; width: 44px; height: 44px; border-radius: 10px; border: 1px solid var(--border); background: transparent; color: var(--text); cursor: pointer; }
+  .mnav-sheet { position: fixed; inset: 0; z-index: 60; background: var(--bg); padding: 12px var(--gutter) 32px; display: flex; flex-direction: column; overflow-y: auto; }
+  .mnav-sheet[hidden] { display: none; }
+  .mnav-top { display: flex; align-items: center; justify-content: space-between; height: 52px; }
+  .mnav-sheet ul { list-style: none; padding: 0; margin: 24px 0; }
+  .mnav-sheet li a { display: flex; align-items: center; min-height: 56px; font-size: 1.5rem; font-weight: 650; color: var(--text); border-bottom: 1px solid var(--border); }
+  .mnav-resume { width: 100%; }
+</style>
+<script>
+  const openBtn = document.querySelector<HTMLButtonElement>('[data-mnav-open]');
+  const sheet = document.querySelector<HTMLElement>('[data-mnav-sheet]');
+  const closeBtn = document.querySelector<HTMLButtonElement>('[data-mnav-close]');
+  if (openBtn && sheet && closeBtn) {
+    const focusables = () =>
+      [...sheet.querySelectorAll<HTMLElement>('a[href], button:not([disabled])')].filter((el) => el.offsetParent !== null);
+    const close = (restore = true) => {
+      sheet.hidden = true;
+      openBtn.setAttribute('aria-expanded', 'false');
+      document.body.style.overflow = '';
+      if (restore) openBtn.focus();
+    };
+    const open = () => {
+      sheet.hidden = false;
+      openBtn.setAttribute('aria-expanded', 'true');
+      document.body.style.overflow = 'hidden';
+      closeBtn.focus();
+    };
+    openBtn.addEventListener('click', open);
+    closeBtn.addEventListener('click', () => close());
+    sheet.querySelectorAll('[data-mnav-link]').forEach((a) => a.addEventListener('click', () => close(false)));
+    sheet.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') { e.preventDefault(); close(); return; }
+      if (e.key !== 'Tab') return;
+      const f = focusables();
+      if (!f.length) return;
+      const first = f[0], last = f[f.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    });
+    window.matchMedia('(min-width: 900px)').addEventListener('change', (m) => { if (m.matches && !sheet.hidden) close(false); });
+  }
+</script>

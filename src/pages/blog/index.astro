@@ -1,0 +1,24 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PostList from '../../components/ui/PostList.astro';
+import Icon from '../../components/icons/Icon.astro';
+const posts = (await getCollection('posts', (p) => !p.data.draft)).sort(
+  (a, b) => b.data.date.valueOf() - a.data.date.valueOf(),
+);
+---
+<BaseLayout title="Engineering notes" description="Short write-ups on problems I've actually hit in production." ogImage="/og/blog.png">
+  <section class="container blog">
+    <h1 class="b-title">Engineering notes</h1>
+    <p class="muted b-sub">Short write-ups on problems I've actually hit in production.</p>
+    <p class="b-rss"><a href="/rss.xml"><Icon name="rss" size={16} /> RSS feed</a></p>
+    <PostList posts={posts} />
+  </section>
+</BaseLayout>
+<style>
+  .blog { padding-block: 64px 96px; }
+  .b-title { font-size: var(--fs-h1); }
+  .b-sub { margin-top: 12px; }
+  .b-rss { margin: 12px 0 32px; font-size: var(--fs-small); }
+  .b-rss a { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; }
+</style>

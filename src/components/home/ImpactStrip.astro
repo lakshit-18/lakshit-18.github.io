@@ -1,0 +1,42 @@
+---
+import MetricCard from '../ui/MetricCard.astro';
+import { impactMetrics } from '../../data/site';
+---
+<section id="impact" class="container impact reveal" aria-labelledby="impact-h">
+  <h2 id="impact-h" class="micro faint">PRODUCTION METRICS · 30-DAY WINDOW · SEP 2026</h2>
+  <div class="impact-grid">
+    {impactMetrics.map((m) => <MetricCard value={m.value} label={m.label} sub={m.sub} countUp />)}
+  </div>
+</section>
+<style>
+  .impact { padding-block: 24px 32px; }
+  .impact-grid { display: grid; gap: 16px; margin-top: 16px; grid-template-columns: 1fr; }
+  @media (min-width: 480px) { .impact-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1024px) { .impact-grid { grid-template-columns: repeat(4, 1fr); } }
+</style>
+<script>
+  // Count up over 900ms when first visible; instant under reduced motion.
+  const nodes = [...document.querySelectorAll<HTMLElement>('[data-countup]')];
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (!reduce && nodes.length && 'IntersectionObserver' in window) {
+    const run = (el: HTMLElement) => {
+      const raw = el.dataset.target!;
+      const decimals = (raw.split('.')[1] || '').length;
+      const target = parseFloat(raw.replace(/,/g, ''));
+      const pre = el.dataset.prefix ?? '', suf = el.dataset.suffix ?? '';
+      const final = el.textContent;
+      const t0 = performance.now();
+      const step = (t: number) => {
+        const p = Math.min(1, (t - t0) / 900);
+        const eased = 1 - Math.pow(1 - p, 3);
+        el.textContent = pre + (target * eased).toFixed(decimals) + suf;
+        if (p < 1) requestAnimationFrame(step); else el.textContent = final;
+      };
+      requestAnimationFrame(step);
+    };
+    const io = new IntersectionObserver((entries) => {
+      for (const e of entries) if (e.isIntersecting) { run(e.target as HTMLElement); io.unobserve(e.target); }
+    }, { threshold: 0.4 });
+    nodes.forEach((n) => io.observe(n));
+  }
+</script>

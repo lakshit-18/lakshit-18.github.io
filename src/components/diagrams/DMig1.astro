@@ -1,0 +1,39 @@
+---
+// D-MIG-1: Kafka to SQS migration. Static, theme-aware inline SVG (spec §13). No props.
+---
+<svg id="d-mig-1" viewBox="0 0 960 416" width="100%" role="img" aria-labelledby="d-mig-1-title d-mig-1-desc" style="max-width:960px;height:auto;display:block;margin-inline:auto;color:var(--text-muted)" xmlns="http://www.w3.org/2000/svg">
+  <title id="d-mig-1-title">Kafka to SQS migration</title>
+  <desc id="d-mig-1-desc">Before: a producer publishes to a Kafka topic read by consumers. After: the producer splits traffic by percentage to SQS / SNS, a Lambda bridge delivers it to consumer HTTP endpoints, and a dashed fallback path still lets the producer publish to Kafka.</desc>
+  <style is:inline>#d-mig-1 text{font-family:var(--font-mono);text-anchor:middle;dominant-baseline:central}#d-mig-1 .t{fill:var(--text);font-size:15px}#d-mig-1 .s{fill:var(--text-muted);font-size:13px}#d-mig-1 .cap{text-anchor:start;text-transform:uppercase;letter-spacing:.08em}#d-mig-1 .b{fill:var(--bg-elev);stroke:currentColor;stroke-opacity:.5;stroke-width:1.5}#d-mig-1 .p{fill:var(--bg-sunk);stroke:var(--border);stroke-width:1.5}#d-mig-1 .l{fill:none;stroke:currentColor;stroke-width:1.5;stroke-linejoin:round}#d-mig-1 .hl{stroke:var(--accent)}#d-mig-1 .d{stroke-dasharray:6 5}#d-mig-1 .ma{fill:currentColor}#d-mig-1 .mah{fill:var(--accent)}#d-mig-1 .ht{fill:var(--accent)}</style>
+  <defs><marker id="d-mig-1-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="ma" d="M0,0 L10,5 L0,10 z"/></marker><marker id="d-mig-1-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="mah" d="M0,0 L10,5 L0,10 z"/></marker></defs>
+  <rect class="p" x="16" y="16" width="928" height="136" rx="8"/>
+  <text class="s cap" x="40" y="44">Before</text>
+  <rect class="b" x="40" y="64" width="160" height="56" rx="8"/>
+  <text class="t" x="120" y="92">Producer</text>
+  <rect class="b" x="296" y="64" width="160" height="56" rx="8"/>
+  <text class="t" x="376" y="92">Kafka topic</text>
+  <rect class="b" x="744" y="64" width="176" height="56" rx="8"/>
+  <text class="t" x="832" y="92">Consumers</text>
+  <path class="l" d="M200,92 L296,92" marker-end="url(#d-mig-1-a)"/>
+  <path class="l" d="M456,92 L744,92" marker-end="url(#d-mig-1-a)"/>
+  <rect class="p" x="16" y="176" width="928" height="224" rx="8"/>
+  <text class="s cap" x="40" y="204">After</text>
+  <rect class="b" x="40" y="224" width="160" height="56" rx="8"/>
+  <text class="t" x="120" y="252">Producer</text>
+  <rect class="b" x="296" y="224" width="160" height="56" rx="8"/>
+  <text class="t" x="376" y="252">SQS / SNS</text>
+  <rect class="b" x="520" y="224" width="160" height="56" rx="8"/>
+  <text class="t" x="600" y="242">Lambda</text>
+  <text class="t" x="600" y="262">bridge</text>
+  <rect class="b" x="744" y="224" width="176" height="56" rx="8"/>
+  <text class="t" x="832" y="242">Consumer HTTP</text>
+  <text class="t" x="832" y="262">endpoints</text>
+  <path class="l" d="M200,252 L296,252" marker-end="url(#d-mig-1-a)"/>
+  <text class="s" x="248" y="236" style="text-anchor:middle">split %</text>
+  <path class="l" d="M456,252 L520,252" marker-end="url(#d-mig-1-a)"/>
+  <path class="l" d="M680,252 L744,252" marker-end="url(#d-mig-1-a)"/>
+  <rect class="b" x="296" y="320" width="160" height="56" rx="8"/>
+  <text class="t" x="376" y="348">Kafka topic</text>
+  <path class="l d" d="M120,280 L120,348 L296,348" marker-end="url(#d-mig-1-a)"/>
+  <text class="s" x="208" y="332" style="text-anchor:middle">fallback</text>
+</svg>

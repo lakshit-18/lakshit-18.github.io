@@ -1,0 +1,9 @@
+---
+interface Props { status: 'Production' | 'System design' | 'Personal project' }
+const { status } = Astro.props;
+const cls = status === 'Production' ? 'badge-production' : status === 'System design' ? 'badge-design' : 'badge-project';
+---
+<span class:list={['badge', cls]}>
+  <span aria-hidden="true" style="width:6px;height:6px;border-radius:999px;background:currentColor;display:inline-block"></span>
+  {status}
+</span>

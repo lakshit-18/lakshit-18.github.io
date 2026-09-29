@@ -1,0 +1,44 @@
+---
+import SectionHeading from '../ui/SectionHeading.astro';
+import Badge from '../ui/Badge.astro';
+import Chip from '../ui/Chip.astro';
+import Icon from '../icons/Icon.astro';
+import { workCards } from '../../data/site';
+---
+<section id="work" class="section container reveal" aria-labelledby="work-h">
+  <SectionHeading id="work-h" title="Selected work" sub="Case studies from my role as SDE 1 – Backend (Java) at Standard Chartered Research and Technology (SOLV), Jan 2024 – Present." />
+  <div class="timeline card">
+    <p><strong>Software Development Engineer 1 – Backend (Java)</strong> <span class="muted">· Full-time + Internship</span></p>
+    <p class="muted">Standard Chartered Research and Technology (SOLV) · Bengaluru · <strong class="tl-date">Jan 2024 – Present</strong></p>
+  </div>
+  <ul class="work-grid">
+    {workCards.map((w) => (
+      <li class="card card-hover work-card">
+        <Badge status={w.status} />
+        <h3 class="wc-title"><a href={`/work/${w.slug}`} class="wc-link">{w.title}</a></h3>
+        <p class="muted wc-tag">{w.tagline}</p>
+        <div class="wc-chips">{w.chips.map((c) => <Chip>{c}</Chip>)}</div>
+        <p class="faint mono wc-stack">{w.stack}</p>
+        <span class="wc-more" aria-hidden="true">Read case study <Icon name="arrow-right" size={16} /></span>
+        <span class="visually-hidden">Read the {w.title} case study</span>
+      </li>
+    ))}
+  </ul>
+</section>
+<style>
+  .timeline { margin-bottom: 24px; padding: 16px 20px; font-size: var(--fs-small); line-height: 1.6; }
+  .tl-date { color: var(--text); }
+  .work-grid { list-style: none; padding: 0; margin: 0; display: grid; gap: 16px; grid-template-columns: 1fr; }
+  @media (min-width: 768px) { .work-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1024px) { .work-grid { grid-template-columns: repeat(3, 1fr); } }
+  .work-card { position: relative; display: flex; flex-direction: column; gap: 12px; align-items: flex-start; }
+  .wc-title { font-size: var(--fs-h3); line-height: 1.3; }
+  .wc-link { color: var(--text); }
+  .wc-link::after { content: ''; position: absolute; inset: 0; border-radius: var(--radius); }
+  .wc-link:hover { text-decoration: none; }
+  .work-card:focus-within { border-color: var(--accent-border); }
+  .wc-tag { font-size: var(--fs-small); line-height: 1.55; }
+  .wc-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .wc-stack { font-size: 0.75rem; line-height: 1.5; }
+  .wc-more { margin-top: auto; display: inline-flex; align-items: center; gap: 6px; color: var(--accent); font-size: var(--fs-small); font-weight: 600; }
+</style>

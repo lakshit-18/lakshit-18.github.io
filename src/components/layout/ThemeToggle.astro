@@ -1,0 +1,35 @@
+---
+import Icon from '../icons/Icon.astro';
+---
+<button type="button" class="theme-toggle" data-theme-toggle aria-label="Switch to light theme">
+  <span class="tt-sun"><Icon name="sun" /></span>
+  <span class="tt-moon"><Icon name="moon" /></span>
+</button>
+<style>
+  .theme-toggle { display: inline-grid; place-items: center; width: 44px; height: 44px; border-radius: 10px; border: 1px solid var(--border); background: transparent; color: var(--text-muted); cursor: pointer; }
+  .theme-toggle:hover { color: var(--accent); border-color: var(--accent); }
+  .tt-moon { display: none; }
+  :global(:root[data-theme='light']) .tt-sun { display: none; }
+  :global(:root[data-theme='light']) .tt-moon { display: inline-flex; }
+  .tt-sun { display: inline-flex; }
+</style>
+<script>
+  function current(): 'light' | 'dark' {
+    return document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark';
+  }
+  function label() {
+    const next = current() === 'dark' ? 'light' : 'dark';
+    document.querySelectorAll<HTMLButtonElement>('[data-theme-toggle]').forEach((b) =>
+      b.setAttribute('aria-label', `Switch to ${next} theme`),
+    );
+  }
+  label();
+  document.querySelectorAll<HTMLButtonElement>('[data-theme-toggle]').forEach((btn) =>
+    btn.addEventListener('click', () => {
+      const next = current() === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', next);
+      try { localStorage.setItem('theme', next); } catch (e) { /* storage unavailable */ }
+      label();
+    }),
+  );
+</script>

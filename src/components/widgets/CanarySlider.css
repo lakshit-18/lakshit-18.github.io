@@ -1,0 +1,20 @@
+.cs-controls { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: 12px 20px; margin-bottom: 12px; }
+.cs-slider { display: flex; flex-direction: column; gap: 6px; flex: 1 1 220px; max-width: 300px; }
+.cs-ticks { display: flex; justify-content: space-between; font-size: 10.5px; max-width: 280px; }
+.cs-side { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; }
+.cs-check { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; min-height: 36px; }
+.cs-stagebar { margin-bottom: 10px; }
+.cs-stage svg { font-family: var(--font-mono); }
+.cs-box { fill: var(--bg-elev); stroke: var(--text-muted); stroke-width: 1.5; }
+.cs-label { fill: var(--text); font-size: 12px; font-weight: 600; }
+.cs-sub { font-size: 10.5px; fill: var(--warn); }
+.cs-lane { fill: none; stroke: var(--border); stroke-width: 1.5; stroke-dasharray: 4 4; }
+.cs-lane-on { stroke: var(--accent); stroke-dasharray: none; }
+.cs-fallback { stroke: var(--warn); stroke-dasharray: 3 3; }
+.cs-dot { left: 20.7%; top: 50%; background: var(--info); animation: cs-up 900ms linear forwards; }
+.cs-r-kafka { background: var(--text-muted); animation-name: cs-down; }
+.cs-r-fallback { background: var(--warn); animation-name: cs-bounce; }
+@keyframes cs-up { to { left: 73.3%; top: 17.6%; } }
+@keyframes cs-down { to { left: 73.3%; top: 82.4%; } }
+@keyframes cs-bounce { 50% { left: 55%; top: 22.4%; } to { left: 73.3%; top: 82.4%; } }
+@media (prefers-reduced-motion: reduce) { .cs-dot { display: none; } }

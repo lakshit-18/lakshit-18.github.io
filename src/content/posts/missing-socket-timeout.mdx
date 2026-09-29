@@ -1,0 +1,34 @@
+---
+title: "How one missing socket timeout took down a connection pool"
+slug: "missing-socket-timeout"
+description: "An 8-second network blip turned into a 71-minute outage. The cause was one missing JDBC setting."
+date: 2026-09-29
+tags: ["jdbc", "reliability", "incidents", "java"]
+draft: false
+---
+
+Some outages have dramatic causes. This one came from a setting that was simply not there.
+
+## What happened
+
+A payment-gateway service lost its database connectivity for about 8 seconds, a routine network blip. The database came back almost immediately. The service didn't. For over an hour it kept failing requests until it was restarted: an **8-second blip became a 71-minute outage**.
+
+## Why the pool never recovered
+
+The service used a small connection pool of 8 connections. When the network dropped, several connections were in the middle of a query. The TCP connections became **half-open**: the database side was gone, but the client's socket didn't know it. It was still waiting for bytes that would never arrive.
+
+The JDBC URL had **no socket timeout**. Without one, a blocking read on a socket can wait indefinitely, since the OS won't give up on its own for a very long time. Each thread holding one of those connections was stuck forever, and every stuck thread kept its connection checked out of the pool.
+
+With only 8 connections, it took only a handful of stuck ones to exhaust the pool. New requests then waited for a free connection, hit the pool's connection-acquire timeout, and failed. The database was healthy the whole time. The pool was simply full of connections that would never come back.
+
+## The fixes
+
+1. **Always set a socket (read) timeout on the JDBC URL**, above your slowest legitimate query but far below "forever". This single setting turns an infinite hang into a bounded error, after which the pool discards the broken connection and opens a fresh one.
+2. **Set a connect timeout too**, so establishing a connection during an outage fails fast instead of piling up.
+3. **Use the pool's health features.** Set a max lifetime shorter than any network or proxy idle timeout, and validate connections so dead ones get evicted.
+4. **Size the pool for failure, not just for load.** A tiny pool has no headroom: a few stuck connections are a total outage.
+5. **Alert on the right signal.** "Active connections pinned at maximum while database load is normal" is the fingerprint of stuck connections, not of real traffic.
+
+## The general lesson
+
+Every network call needs three limits: how long to wait to connect, how long to wait for data, and how long the whole operation may take. Defaults are often "forever" for at least one of them. After this incident, we audited every JDBC URL across our services for socket timeouts. That audit is cheap, and skipping it can cost you an hour of outage.

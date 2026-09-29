@@ -1,0 +1,55 @@
+---
+// D-PG-1: Payment gateway abstraction. Static, theme-aware inline SVG (spec §13). No props.
+---
+<svg id="d-pg-1" viewBox="0 0 960 376" width="100%" role="img" aria-labelledby="d-pg-1-title d-pg-1-desc" style="max-width:960px;height:auto;display:block;margin-inline:auto;color:var(--text-muted)" xmlns="http://www.w3.org/2000/svg">
+  <title id="d-pg-1-title">Payment gateway abstraction</title>
+  <desc id="d-pg-1-desc">Checkout, credit and delivery-collections callers all use one gateway contract; a factory picks the matching strategy for PayU, Razorpay, Cashfree, BharatPe or in-app UPI, supported by per-tenant encrypted credentials and status normalization.</desc>
+  <style is:inline>#d-pg-1 text{font-family:var(--font-mono);text-anchor:middle;dominant-baseline:central}#d-pg-1 .t{fill:var(--text);font-size:15px}#d-pg-1 .s{fill:var(--text-muted);font-size:13px}#d-pg-1 .cap{text-anchor:start;text-transform:uppercase;letter-spacing:.08em}#d-pg-1 .b{fill:var(--bg-elev);stroke:currentColor;stroke-opacity:.5;stroke-width:1.5}#d-pg-1 .p{fill:var(--bg-sunk);stroke:var(--border);stroke-width:1.5}#d-pg-1 .l{fill:none;stroke:currentColor;stroke-width:1.5;stroke-linejoin:round}#d-pg-1 .hl{stroke:var(--accent)}#d-pg-1 .d{stroke-dasharray:6 5}#d-pg-1 .ma{fill:currentColor}#d-pg-1 .mah{fill:var(--accent)}#d-pg-1 .ht{fill:var(--accent)}</style>
+  <defs><marker id="d-pg-1-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="ma" d="M0,0 L10,5 L0,10 z"/></marker><marker id="d-pg-1-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="mah" d="M0,0 L10,5 L0,10 z"/></marker></defs>
+  <text class="s cap" x="104" y="76" style="text-anchor:middle">callers</text>
+  <text class="s cap" x="828" y="32" style="text-anchor:middle">strategies</text>
+  <rect class="b" x="12" y="92" width="184" height="56" rx="8"/>
+  <text class="t" x="104" y="120">Checkout</text>
+  <path class="l" d="M196,120 L228,120"/>
+  <rect class="b" x="12" y="172" width="184" height="56" rx="8"/>
+  <text class="t" x="104" y="200">Credit</text>
+  <path class="l" d="M196,200 L228,200"/>
+  <rect class="b" x="12" y="252" width="184" height="56" rx="8"/>
+  <text class="t" x="104" y="270">Delivery</text>
+  <text class="t" x="104" y="290">collections</text>
+  <path class="l" d="M196,280 L228,280"/>
+  <path class="l" d="M228,120 L228,280"/>
+  <path class="l" d="M228,200 L260,200" marker-end="url(#d-pg-1-a)"/>
+  <rect class="b" x="260" y="172" width="168" height="56" rx="8"/>
+  <text class="t" x="344" y="190">Gateway</text>
+  <text class="t" x="344" y="210">contract</text>
+  <path class="l" d="M428,200 L492,200" marker-end="url(#d-pg-1-a)"/>
+  <rect class="b" x="492" y="172" width="144" height="56" rx="8"/>
+  <text class="t" x="564" y="200">Factory</text>
+  <path class="l" d="M636,200 L684,200"/>
+  <path class="l" d="M684,72 L684,328"/>
+  <rect class="b" x="728" y="48" width="200" height="48" rx="8"/>
+  <text class="t" x="828" y="72">PayU</text>
+  <path class="l" d="M684,72 L728,72" marker-end="url(#d-pg-1-a)"/>
+  <rect class="b" x="728" y="112" width="200" height="48" rx="8"/>
+  <text class="t" x="828" y="136">Razorpay</text>
+  <path class="l" d="M684,136 L728,136" marker-end="url(#d-pg-1-a)"/>
+  <rect class="b" x="728" y="176" width="200" height="48" rx="8"/>
+  <text class="t" x="828" y="200">Cashfree</text>
+  <path class="l" d="M684,200 L728,200" marker-end="url(#d-pg-1-a)"/>
+  <rect class="b" x="728" y="240" width="200" height="48" rx="8"/>
+  <text class="t" x="828" y="264">BharatPe</text>
+  <path class="l" d="M684,264 L728,264" marker-end="url(#d-pg-1-a)"/>
+  <rect class="b" x="728" y="304" width="200" height="48" rx="8"/>
+  <text class="t" x="828" y="328">In-app UPI</text>
+  <path class="l" d="M684,328 L728,328" marker-end="url(#d-pg-1-a)"/>
+  <rect class="b" x="260" y="272" width="168" height="80" rx="8"/>
+  <text class="t" x="344" y="302">Status</text>
+  <text class="t" x="344" y="322">normalization</text>
+  <path class="l" d="M344,228 L344,272"/>
+  <rect class="b" x="476" y="272" width="176" height="80" rx="8"/>
+  <text class="t" x="564" y="292">Per-tenant</text>
+  <text class="t" x="564" y="312">encrypted</text>
+  <text class="t" x="564" y="332">credentials</text>
+  <path class="l" d="M564,228 L564,272"/>
+</svg>

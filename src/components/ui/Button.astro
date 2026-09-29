@@ -1,0 +1,28 @@
+---
+import Icon from '../icons/Icon.astro';
+import type { IconName } from '../icons/names';
+interface Props {
+  href: string;
+  variant?: 'primary' | 'outline';
+  size?: 'md' | 'lg';
+  icon?: IconName;
+  iconRight?: IconName;
+  download?: string;
+  external?: boolean;
+  class?: string;
+  'aria-label'?: string;
+}
+const { href, variant = 'primary', size = 'md', icon, iconRight, download, external, class: cls, ...rest } = Astro.props;
+---
+<a
+  href={href}
+  class:list={['btn', variant === 'primary' ? 'btn-primary' : 'btn-outline', size === 'lg' && 'btn-lg', cls]}
+  download={download}
+  target={external ? '_blank' : undefined}
+  rel={external ? 'noopener noreferrer' : undefined}
+  {...rest}
+>
+  {icon && <Icon name={icon} size={18} />}
+  <slot />
+  {iconRight && <Icon name={iconRight} size={16} />}
+</a>

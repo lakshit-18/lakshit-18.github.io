@@ -1,0 +1,18 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Button from '../components/ui/Button.astro';
+---
+<BaseLayout title="Page not found" description="The link may be broken or the page moved.">
+  <section class="container nf">
+    <p class="micro faint mono">404</p>
+    <h1 class="nf-title">404 — this page never reached <span class="mono">CHECKOUT_COMPLETED</span>.</h1>
+    <p class="muted nf-text">The link may be broken or the page moved.</p>
+    <Button href="/" size="lg">Back to home</Button>
+  </section>
+</BaseLayout>
+<style>
+  .nf { padding-block: 128px; }
+  .nf-title { font-size: var(--fs-h1); margin-top: 12px; max-width: 22ch; overflow-wrap: anywhere; }
+  .nf-title .mono { color: var(--accent); font-size: 0.8em; }
+  .nf-text { margin: 16px 0 32px; }
+</style>

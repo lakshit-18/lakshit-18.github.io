@@ -1,0 +1,15 @@
+.srd-request { margin-bottom: 12px; }
+.srd-sections { display: flex; flex-direction: column; gap: 10px; }
+.srd-shead { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; margin-bottom: 8px; }
+.srd-sname { font-weight: 700; }
+.srd-wb { margin-left: auto; font: 600 0.75rem/1 var(--font-mono); }
+.srd-item { border-top: 1px dashed var(--border); padding-top: 8px; margin-top: 8px; }
+.srd-item:first-of-type { border-top: 0; margin-top: 0; padding-top: 0; }
+.srd-ihead { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-bottom: 6px; font-size: var(--fs-micro); }
+.srd-row { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; margin: 4px 0; }
+.srd-img { min-width: 3.5em; }
+.srd-value { flex: 1 1 100%; }
+.srd-toggle { display: inline-flex; flex-wrap: wrap; gap: 4px; }
+.srd-opt { min-height: 32px; padding: 0 10px; font-size: var(--fs-micro); }
+.srd-rules { margin-top: 12px; font-size: var(--fs-micro); color: var(--text-muted); }
+.srd-rules li::before { content: "▸ "; color: var(--accent); }

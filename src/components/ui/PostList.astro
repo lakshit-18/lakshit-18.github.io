@@ -1,0 +1,31 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { render } from 'astro:content';
+interface Props { posts: CollectionEntry<'posts'>[] }
+const { posts } = Astro.props;
+const items = await Promise.all(
+  posts.map(async (p) => {
+    const { remarkPluginFrontmatter } = await render(p);
+    return { p, readingTime: remarkPluginFrontmatter.readingTime as string };
+  }),
+);
+const fmt = (d: Date) => d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' });
+---
+<ul class="posts">
+  {items.map(({ p, readingTime }) => (
+    <li class="post">
+      <h3 class="post-title"><a href={`/blog/${p.data.slug}`}>{p.data.title}</a></h3>
+      <p class="muted post-desc">{p.data.description}</p>
+      <p class="faint mono post-meta"><time datetime={p.data.date.toISOString()}>{fmt(p.data.date)}</time> · {readingTime}</p>
+    </li>
+  ))}
+</ul>
+<style>
+  .posts { list-style: none; padding: 0; margin: 0; border-top: 1px solid var(--border); }
+  .post { padding: 20px 0; border-bottom: 1px solid var(--border); display: grid; gap: 6px; }
+  .post-title { font-size: var(--fs-h3); line-height: 1.35; }
+  .post-title a { color: var(--text); }
+  .post-title a:hover { color: var(--accent); }
+  .post-desc { font-size: var(--fs-small); max-width: 72ch; }
+  .post-meta { font-size: 0.75rem; }
+</style>

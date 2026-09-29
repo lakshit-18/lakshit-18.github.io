@@ -1,0 +1,61 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import TOC from '../components/ui/TOC.astro';
+import ChipList from '../components/ui/ChipList.astro';
+import Icon from '../components/icons/Icon.astro';
+import type { CollectionEntry } from 'astro:content';
+import { site } from '../data/site';
+
+interface Props {
+  entry: CollectionEntry<'posts'>;
+  headings: { depth: number; slug: string; text: string }[];
+  readingTime: string;
+}
+const { entry, headings, readingTime } = Astro.props;
+const d = entry.data;
+const iso = d.date.toISOString();
+const dateText = d.date.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BlogPosting',
+  headline: d.title,
+  description: d.description,
+  datePublished: iso,
+  dateModified: iso,
+  author: { '@type': 'Person', name: site.name, url: site.url },
+  image: new URL(`/og/${d.slug}.png`, site.url).href,
+  mainEntityOfPage: new URL(`/blog/${d.slug}`, site.url).href,
+  keywords: d.tags.join(', '),
+};
+---
+<BaseLayout title={d.title} description={d.description} ogImage={`/og/${d.slug}.png`} type="article" jsonLd={jsonLd} publishedTime={iso}>
+  <article class="container post">
+    <header class="p-head">
+      <a href="/blog" class="back"><Icon name="arrow-left" size={16} /> All posts</a>
+      <h1 class="p-title">{d.title}</h1>
+      <p class="p-desc muted">{d.description}</p>
+      <p class="p-meta faint mono"><time datetime={iso}>{dateText}</time> · {readingTime} · {site.name}</p>
+      <div class="p-tags"><ChipList items={d.tags} label="Tags" /></div>
+    </header>
+    <div class="p-body">
+      <div class="prose"><slot /></div>
+      <aside class="p-toc"><TOC headings={headings} /></aside>
+    </div>
+    <p class="p-all"><a href="/blog">← All posts</a></p>
+  </article>
+</BaseLayout>
+<style>
+  .post { padding-block: 48px 96px; }
+  .back { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; color: var(--text-muted); font-size: var(--fs-small); }
+  .back:hover { color: var(--accent); }
+  .p-title { font-size: var(--fs-h1); margin-top: 16px; max-width: 24ch; }
+  .p-desc { font-size: 1.125rem; margin-top: 14px; max-width: 68ch; line-height: 1.6; }
+  .p-meta { font-size: 0.8125rem; margin-top: 16px; }
+  .p-tags { margin-top: 16px; }
+  .p-body { display: grid; grid-template-columns: minmax(0, 1fr); gap: 48px; margin-top: 40px; padding-top: 8px; border-top: 1px solid var(--border); }
+  @media (min-width: 1024px) { .p-body { grid-template-columns: minmax(0, 1fr) 220px; } }
+  .p-toc { display: none; }
+  @media (min-width: 1024px) { .p-toc { display: block; padding-top: 32px; } }
+  .p-all { margin-top: 64px; font-weight: 600; font-size: var(--fs-small); }
+  .p-all a { display: inline-flex; align-items: center; min-height: 44px; }
+</style>

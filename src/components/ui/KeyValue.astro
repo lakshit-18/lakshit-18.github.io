@@ -1,0 +1,13 @@
+---
+interface Props { items: { k: string; v: string }[] }
+const { items } = Astro.props;
+---
+<dl class="kv">
+  {items.map((i) => (
+    <div class="kv-item"><dt class="micro faint">{i.k}</dt><dd>{i.v}</dd></div>
+  ))}
+</dl>
+<style>
+  .kv { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px 28px; margin: 0; }
+  .kv-item dd { margin: 4px 0 0; font-size: var(--fs-small); color: var(--text); line-height: 1.5; }
+</style>

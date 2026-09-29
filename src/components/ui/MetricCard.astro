@@ -1,0 +1,21 @@
+---
+interface Props { value: string; label: string; sub?: string; countUp?: boolean }
+const { value, label, sub, countUp = false } = Astro.props;
+// Split "~25K" / "99.57%" / "±1 paisa" into prefix, number, suffix for the count-up.
+const m = value.match(/^([^\d]*)([\d.,]+)(.*)$/);
+const canCount = countUp && m !== null;
+---
+<div class="card metric">
+  <div class="metric-value mono" data-countup={canCount ? '' : undefined}
+       data-prefix={canCount ? m![1] : undefined}
+       data-target={canCount ? m![2] : undefined}
+       data-suffix={canCount ? m![3] : undefined}>{value}</div>
+  <div class="metric-label">{label}</div>
+  {sub && <div class="metric-sub faint mono">{sub}</div>}
+</div>
+<style>
+  .metric { display: flex; flex-direction: column; gap: 6px; }
+  .metric-value { font-size: clamp(1.75rem, 1.4rem + 1.2vw, 2.25rem); font-weight: 700; color: var(--text); letter-spacing: -0.02em; line-height: 1.1; font-variant-numeric: tabular-nums; }
+  .metric-label { color: var(--text-muted); font-size: var(--fs-small); line-height: 1.45; }
+  .metric-sub { font-size: 0.75rem; line-height: 1.5; }
+</style>

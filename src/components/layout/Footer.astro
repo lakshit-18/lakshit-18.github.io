@@ -1,0 +1,36 @@
+---
+import Icon from '../icons/Icon.astro';
+import { site } from '../../data/site';
+const links = [
+  { href: `mailto:${site.email}`, icon: 'mail', label: 'Email' },
+  { href: site.phoneTel, icon: 'phone', label: 'Phone' },
+  { href: site.linkedin, icon: 'linkedin', label: 'LinkedIn', ext: true },
+  { href: site.github, icon: 'github', label: 'GitHub', ext: true },
+] as const;
+---
+<footer class="site-footer">
+  <div class="container ftr">
+    <p class="faint">© 2026 Lakshit Lohar · Built with Astro · Hosted on GitHub Pages</p>
+    <div class="ftr-right">
+      <ul class="ftr-icons">
+        {links.map((l) => (
+          <li>
+            <a href={l.href} aria-label={l.label} target={'ext' in l ? '_blank' : undefined} rel={'ext' in l ? 'noopener noreferrer' : undefined}>
+              <Icon name={l.icon} />
+            </a>
+          </li>
+        ))}
+      </ul>
+      <a href="#top" class="to-top">Back to top ↑</a>
+    </div>
+  </div>
+</footer>
+<style>
+  .site-footer { border-top: 1px solid var(--border); padding-block: 32px; }
+  .ftr { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; font-size: var(--fs-small); }
+  .ftr-right { display: flex; align-items: center; gap: 12px; }
+  .ftr-icons { display: flex; list-style: none; margin: 0; padding: 0; gap: 4px; }
+  .ftr-icons a { display: inline-grid; place-items: center; width: 44px; height: 44px; border-radius: 10px; color: var(--text-muted); }
+  .ftr-icons a:hover { color: var(--accent); background: var(--accent-weak); }
+  .to-top { display: inline-flex; align-items: center; min-height: 44px; color: var(--text-muted); }
+</style>

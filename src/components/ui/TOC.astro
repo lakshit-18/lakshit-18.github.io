@@ -1,0 +1,36 @@
+---
+interface Props { headings: { depth: number; slug: string; text: string }[] }
+const items = Astro.props.headings.filter((h) => h.depth === 2);
+---
+{items.length > 0 && (
+  <nav class="toc" aria-label="On this page">
+    <p class="micro faint">On this page</p>
+    <ol>
+      {items.map((h) => <li><a href={`#${h.slug}`}>{h.text}</a></li>)}
+    </ol>
+  </nav>
+)}
+<style>
+  .toc { position: sticky; top: calc(var(--header-h) + 32px); font-size: var(--fs-small); }
+  .toc ol { list-style: none; padding: 0; margin: 12px 0 0; border-left: 1px solid var(--border); }
+  .toc li a { display: block; padding: 5px 0 5px 14px; color: var(--text-muted); line-height: 1.4; margin-left: -1px; border-left: 1px solid transparent; }
+  .toc li a:hover, .toc li a[aria-current="true"] { color: var(--accent); border-left-color: var(--accent); text-decoration: none; }
+</style>
+<script>
+  const links = [...document.querySelectorAll<HTMLAnchorElement>('.toc a')];
+  if (links.length && 'IntersectionObserver' in window) {
+    const map = new Map(links.map((a) => [decodeURIComponent(a.hash.slice(1)), a]));
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) {
+          if (e.isIntersecting) {
+            links.forEach((l) => l.removeAttribute('aria-current'));
+            map.get(e.target.id)?.setAttribute('aria-current', 'true');
+          }
+        }
+      },
+      { rootMargin: '-20% 0px -70% 0px' },
+    );
+    map.forEach((_, id) => { const el = document.getElementById(id); if (el) io.observe(el); });
+  }
+</script>

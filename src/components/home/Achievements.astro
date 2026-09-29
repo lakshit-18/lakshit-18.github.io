@@ -1,0 +1,32 @@
+---
+import SectionHeading from '../ui/SectionHeading.astro';
+---
+<section id="achievements" class="section container reveal" aria-labelledby="ach-h">
+  <SectionHeading id="ach-h" title="Achievements & Education" />
+  <div class="ach-grid">
+    <div class="card">
+      <h3 class="ach-h3">Achievements</h3>
+      <ul class="ach-list">
+        <li><strong>Global Rank 8</strong> — CodeChef January Long 2022-II (15K+ participants)</li>
+        <li><strong>Global Rank 110</strong> — CodeChef Cook-Off 2022 (12K+ participants)</li>
+        <li><strong>3-Star</strong> on CodeChef</li>
+        <li><strong>Pupil</strong> on Codeforces</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3 class="ach-h3">Education</h3>
+      <ul class="ach-list">
+        <li><strong>Lovely Professional University</strong>, Jalandhar — B.Tech in Computer Science and Engineering (specialization in ML and AI)</li>
+        <li>Oct 2020 – Jul 2024 · <strong>CGPA 9.02 / 10</strong></li>
+      </ul>
+    </div>
+  </div>
+</section>
+<style>
+  .ach-grid { display: grid; gap: 16px; }
+  @media (min-width: 768px) { .ach-grid { grid-template-columns: 1fr 1fr; } }
+  .ach-h3 { font-size: var(--fs-h3); margin-bottom: 12px; }
+  .ach-list { margin: 0; padding-left: 1.2em; list-style: disc; }
+  .ach-list li + li { margin-top: 8px; }
+  .ach-list li::marker { color: var(--text-faint); }
+</style>

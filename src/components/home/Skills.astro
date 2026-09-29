@@ -1,0 +1,23 @@
+---
+import SectionHeading from '../ui/SectionHeading.astro';
+import ChipList from '../ui/ChipList.astro';
+import { skills } from '../../data/skills';
+---
+<section id="skills" class="section container reveal" aria-labelledby="skills-h">
+  <SectionHeading id="skills-h" title="Skills" />
+  <dl class="skills">
+    {skills.map((g) => (
+      <div class="sk-row">
+        <dt class="sk-group">{g.group}</dt>
+        <dd><ChipList items={g.items} label={g.group} /></dd>
+      </div>
+    ))}
+  </dl>
+</section>
+<style>
+  .skills { margin: 0; display: grid; gap: 20px; }
+  .sk-row { display: grid; gap: 10px; }
+  @media (min-width: 768px) { .sk-row { grid-template-columns: 220px 1fr; align-items: baseline; } }
+  .sk-group { font-weight: 650; font-size: var(--fs-small); }
+  .sk-row dd { margin: 0; }
+</style>

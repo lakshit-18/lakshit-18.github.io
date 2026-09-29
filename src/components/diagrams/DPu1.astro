@@ -1,0 +1,42 @@
+---
+// D-PU-1: Profile update flow. Static, theme-aware inline SVG (spec §13). No props.
+---
+<svg id="d-pu-1" viewBox="0 0 960 408" width="100%" role="img" aria-labelledby="d-pu-1-title d-pu-1-desc" style="max-width:960px;height:auto;display:block;margin-inline:auto;color:var(--text-muted)" xmlns="http://www.w3.org/2000/svg">
+  <title id="d-pu-1-title">Profile update flow</title>
+  <desc id="d-pu-1-desc">Profile changes reach the customer-management engine, which keeps request and audit tables, from three channels: bulk upload in the internal admin portal, the app through the API gateway, and the support console through the support gateway. Taxonomy supplies banner data to the engine, and the engine raises tickets through the ticketing service to Freshdesk.</desc>
+  <style is:inline>#d-pu-1 text{font-family:var(--font-mono);text-anchor:middle;dominant-baseline:central}#d-pu-1 .t{fill:var(--text);font-size:15px}#d-pu-1 .s{fill:var(--text-muted);font-size:13px}#d-pu-1 .cap{text-anchor:start;text-transform:uppercase;letter-spacing:.08em}#d-pu-1 .b{fill:var(--bg-elev);stroke:currentColor;stroke-opacity:.5;stroke-width:1.5}#d-pu-1 .p{fill:var(--bg-sunk);stroke:var(--border);stroke-width:1.5}#d-pu-1 .l{fill:none;stroke:currentColor;stroke-width:1.5;stroke-linejoin:round}#d-pu-1 .hl{stroke:var(--accent)}#d-pu-1 .d{stroke-dasharray:6 5}#d-pu-1 .ma{fill:currentColor}#d-pu-1 .mah{fill:var(--accent)}#d-pu-1 .ht{fill:var(--accent)}</style>
+  <defs><marker id="d-pu-1-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="ma" d="M0,0 L10,5 L0,10 z"/></marker><marker id="d-pu-1-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="mah" d="M0,0 L10,5 L0,10 z"/></marker></defs>
+  <rect class="b" x="12" y="120" width="184" height="72" rx="8"/>
+  <text class="t" x="104" y="137">Internal admin</text>
+  <text class="t" x="104" y="157">portal</text>
+  <text class="s" x="104" y="176">(bulk upload)</text>
+  <rect class="b" x="12" y="216" width="184" height="72" rx="8"/>
+  <text class="t" x="104" y="252">App</text>
+  <rect class="b" x="12" y="312" width="184" height="72" rx="8"/>
+  <text class="t" x="104" y="348">Support console</text>
+  <rect class="b" x="252" y="216" width="184" height="72" rx="8"/>
+  <text class="t" x="344" y="252">API gateway</text>
+  <rect class="b" x="252" y="312" width="184" height="72" rx="8"/>
+  <text class="t" x="344" y="348">Support gateway</text>
+  <rect class="b" x="476" y="120" width="224" height="264" rx="8"/>
+  <text class="t" x="588" y="215">Customer-management</text>
+  <text class="t" x="588" y="235">engine</text>
+  <text class="s" x="588" y="254"></text>
+  <text class="s" x="588" y="272">Request + Audit</text>
+  <text class="s" x="588" y="290">tables</text>
+  <rect class="b" x="476" y="16" width="224" height="64" rx="8"/>
+  <text class="t" x="588" y="39">Taxonomy</text>
+  <text class="s" x="588" y="58">(banner)</text>
+  <path class="l" d="M588,80 L588,120" marker-end="url(#d-pu-1-a)"/>
+  <path class="l" d="M196,156 L476,156" marker-end="url(#d-pu-1-a)"/>
+  <path class="l" d="M196,252 L252,252" marker-end="url(#d-pu-1-a)"/>
+  <path class="l" d="M436,252 L476,252" marker-end="url(#d-pu-1-a)"/>
+  <path class="l" d="M196,348 L252,348" marker-end="url(#d-pu-1-a)"/>
+  <path class="l" d="M436,348 L476,348" marker-end="url(#d-pu-1-a)"/>
+  <rect class="b" x="756" y="216" width="176" height="72" rx="8"/>
+  <text class="t" x="844" y="252">Ticketing</text>
+  <path class="l" d="M700,252 L756,252" marker-end="url(#d-pu-1-a)"/>
+  <rect class="b" x="756" y="312" width="176" height="72" rx="8"/>
+  <text class="t" x="844" y="348">Freshdesk</text>
+  <path class="l" d="M844,288 L844,312" marker-end="url(#d-pu-1-a)"/>
+</svg>

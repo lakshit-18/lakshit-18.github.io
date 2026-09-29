@@ -1,0 +1,13 @@
+---
+interface Props { id?: string; title: string; sub?: string; as?: 'h2' | 'h1' }
+const { id, title, sub, as: Tag = 'h2' } = Astro.props;
+---
+<div class="sh">
+  <Tag id={id} class="sh-title">{title}</Tag>
+  {sub && <p class="sh-sub muted">{sub}</p>}
+</div>
+<style>
+  .sh { margin-bottom: 40px; max-width: 68ch; }
+  .sh-title { font-size: var(--fs-h2); }
+  .sh-sub { margin-top: 10px; }
+</style>

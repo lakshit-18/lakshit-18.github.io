@@ -1,0 +1,50 @@
+---
+title: "Designing append-only audit trails in DynamoDB"
+slug: "append-only-audit-dynamodb"
+description: "Who requested it, who submitted it, who approved it — and how to record all of it in DynamoDB without hitting transaction limits."
+date: 2026-09-29
+tags: ["dynamodb", "data-modeling", "audit", "system-design"]
+draft: false
+---
+
+When a system changes a customer's legal or financial profile (their GST document, their billing address, their shop name), "the row now says X" is not enough. You need to answer who asked for the change, who supplied it, who approved it, and why something was rejected. This post walks through an append-only audit design in DynamoDB from a profile-correction platform I designed.
+
+## Two tables, two jobs
+
+- The **request table** holds the current state of each correction request: sections, items, images and statuses. It is optimized for reading "what's the state now?"
+- The **audit table** holds history. It is **append-only**: rows are only ever inserted, never updated or deleted.
+
+Separating them keeps the hot path (render a checklist) cheap, and the history complete.
+
+## Keys that sort themselves
+
+The audit table's partition key is the request id, so all history for one request lives together. The sort key is `"{epochMillis}#{8 random chars}"`. Time-first ordering means a single query returns the history in order. The random suffix prevents collisions when two events share a millisecond. Each row records the scope (request, section, item or image), the from and to status, the actor and actor type (customer, agent or system), a reason and note, and the list of image URLs it covers.
+
+## The transaction-limit trap
+
+A reviewer might approve or reject 50 images in one sitting and press Submit once. The natural design writes one audit row per image, plus the updated request, in a single transaction so that the review is all-or-nothing. That can mean 51+ operations for one click, which runs into DynamoDB's per-transaction item limit (100 today) as reviews grow, and costs more for no benefit.
+
+The fix is to **group audit rows per (item, outcome)** instead of per image. If a reviewer approves 30 images of one document and rejects 2, that becomes two audit rows, each listing its image URLs. A realistic 50-image review becomes **about 4–7 operations**, and every image is still individually traceable through the URL lists.
+
+## Idempotency for humans
+
+People double-click, and networks retry. Each reviewer submit carries a **decision-batch id**. If a batch with that id was already applied, the retry is a no-op. That avoids duplicate audit rows, double-counted rejections and duplicate notifications. Request creation carries its own idempotency key for the same reason.
+
+## Never overwrite the thing you're auditing
+
+An audit trail is only half the story if the write-back destroys data. The platform follows one blanket rule: approving new information never modifies or removes what's already stored.
+
+- New documents are **inserted at the head** of the proofs list, so they don't replace old ones. Head insertion also matters because the invoicing system reads the first GST number in that list.
+- An address correction creates a **new address row** and repoints the profile to it. The old row is left untouched.
+
+## Status in one place
+
+Status is computed by one function, bottom-up from images to items to sections to the request, and nowhere else. The audit table records every status transition, so recomputed state and recorded history can always be cross-checked.
+
+## Takeaways
+
+- Keep current state and history in separate tables. Make history append-only.
+- Use a time-ordered sort key with a collision-proof suffix.
+- Group audit writes by outcome to stay far below transaction limits.
+- Give every human action an idempotency key.
+- Pair the audit trail with non-destructive writes, or the history describes data that no longer exists.

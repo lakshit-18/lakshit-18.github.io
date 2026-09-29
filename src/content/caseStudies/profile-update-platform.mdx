@@ -1,0 +1,81 @@
+---
+title: "Profile Update Platform"
+slug: "profile-update-platform"
+order: 5
+tagline: "A self-service, auditable way to request, collect, review and apply profile corrections — without ever overwriting what's already there."
+role: "SDE 1 – Backend (Java)"
+period: "Jan 2024 – Present"
+status: "System design"
+stack: ["Java", "DynamoDB", "REST", "Freshdesk integration"]
+metrics:
+  - { value: "9", label: "services in the design" }
+  - { value: "5", label: "correction categories" }
+  - { value: "~4–7", label: "DynamoDB ops per 50-image review" }
+  - { value: "250", label: "rows per bulk upload" }
+summary: "A self-service, auditable way to request, collect, review and apply profile corrections — without ever overwriting what's already there."
+ogTitle: "Profile Update Platform"
+ogSubtitle: "9 services in the design · 5 correction categories"
+---
+import Callout from '../../components/ui/Callout.astro';
+import Figure from '../../components/ui/Figure.astro';
+import ChipList from '../../components/ui/ChipList.astro';
+import StatusRollupDemo from '../../components/widgets/StatusRollupDemo.tsx';
+import DPu1 from '../../components/diagrams/DPu1.astro';
+
+<Callout variant="note">This is a system design I authored (engineering design document, 2026). It describes the intended architecture, not a shipped system.</Callout>
+
+## Context
+
+Some active retailers have missing or incorrect business profiles: a missing GST document, a wrong address, an outdated shop name. Today corrections happen over phone and WhatsApp and are typed in by a support agent. Nothing records what was requested, who supplied it or who approved it. The credit team's document backlog, which they track by hand in a spreadsheet, is the first use case.
+
+## The problem
+
+Build one bounded, auditable, self-service flow. Any internal team can request corrections in bulk, the customer supplies them in-app, a reviewer approves or rejects each one with a reason, and approved changes land on the real profile without destroying existing data.
+
+## Design
+
+- **Five categories, treated uniformly:** shop photos, business KYC, personal KYC (all image-based), business address and shop name (value-based). For value-based items a reviewer can approve, reject, or replace the value and approve that instead.
+- **Data model (DynamoDB).**
+  - A **request table** with nested sections → items → images, and two GSIs: business + created time, and status + created time.
+  - An **append-only audit table** keyed by request, with a time-ordered sort key.
+  - Enums are stored as plain strings.
+- **One status function.** Status is derived bottom-up (image → item → section → request) in a single function, which is the only place status logic lives. Items within a section are **alternatives** (any one approved document satisfies it). Sections are **mandatory**. The request has five statuses: awaiting submission, partially submitted, under review, completed, cancelled.
+- **One open request per shop, without locks.** A new ingestion cancels any open request in the same transaction that creates the new one. "Latest upload wins" means races self-heal.
+- **Idempotent writes.** Creation carries a creation-request id and each reviewer submit carries a decision-batch id, so retries are no-ops.
+- **Batch reviews in one transaction.** Audit rows are grouped per (item, outcome) instead of per image. A 50-image review takes **~4–7 operations**, well within DynamoDB's 100-operation transaction limit.
+- **Non-destructive write-back, per section.** As soon as a section is satisfied:
+  - new documents are inserted at the **head** of the proofs list, because invoicing reads the first GSTIN it finds, so head insertion keeps GST invoices correct
+  - an address correction creates a **new** address row and repoints to it
+  - nothing already stored is modified or removed
+- **Operational pieces.**
+  - Bulk ingestion through the internal admin portal (250 rows per upload, keep-last de-duplication, batched lookups).
+  - A Credit-page banner with a 2-second timeout that fails closed, plus a kill-switch.
+  - Freshdesk ticket create/update on first submission.
+  - Signed image links that expire in 15 minutes.
+  - An alert each time a section's rejection count crosses a multiple of 3.
+
+<Figure caption="Toggle image decisions and watch item, section and request status recompute."><StatusRollupDemo client:visible /></Figure>
+
+<Figure caption="Services map"><DPu1 /></Figure>
+
+## Key decisions & trade-offs
+
+<Callout variant="tradeoff" title="Alternatives within sections, mandatory sections">This removes a whole class of "partial" states at item and section level.</Callout>
+
+<Callout variant="tradeoff" title="Group audit rows per outcome">One row per image would blow past transaction limits for large reviews, while grouping keeps every image recoverable through the row's URL list.</Callout>
+
+<Callout variant="tradeoff" title="Never overwrite">Appending or repointing costs a little storage but makes every change reversible and keeps downstream readers (like invoicing) correct.</Callout>
+
+## Results (design outcomes)
+
+- A single engine any team can reuse for a new correction type without code changes.
+- Every change carries a full audit trail: who requested, who submitted, who approved, and why something was rejected.
+
+## What I'd do next
+
+- Auto-resolve the Freshdesk ticket when the request completes.
+- Add a scheduled sweep for requests left without a ticket id.
+
+## Tech used
+
+<ChipList items={["Java", "AWS DynamoDB (transactions, GSIs)", "REST", "Freshdesk API"]} label="Tech used" />

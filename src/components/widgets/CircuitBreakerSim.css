@@ -1,0 +1,27 @@
+.cbs-controls { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 12px 20px; margin-bottom: 12px; }
+.cbs-slider { display: flex; flex-direction: column; gap: 6px; flex: 1 1 220px; }
+.cbs-state { margin-bottom: 10px; }
+.cbs-clock { margin-left: auto; }
+.cbs-stage svg { font-family: var(--font-mono); }
+.cbs-box { fill: var(--bg-elev); stroke: var(--text-muted); stroke-width: 1.5; }
+.cbs-label { fill: var(--text); font-size: 12px; font-weight: 600; }
+.cbs-sub { font-size: 10.5px; fill: var(--text-muted); }
+.cbs-route { fill: none; stroke: var(--border); stroke-width: 1.5; stroke-dasharray: 4 4; }
+.cbs-route-on { stroke: var(--accent); stroke-dasharray: none; }
+.cbs-breaker { fill: var(--bg-sunk); stroke-width: 1.5; }
+.cbs-b-success { stroke: var(--success); }
+.cbs-b-danger { stroke: var(--danger); }
+.cbs-b-warn { stroke: var(--warn); }
+.cbs-dot { background: var(--accent); left: 20%; top: 50%; animation: cbs-primary 800ms linear forwards; }
+.cbs-to-backup { background: var(--info); animation-name: cbs-backup; }
+.cbs-failed { animation-name: cbs-fail; }
+@keyframes cbs-primary { to { left: 73.3%; top: 22.2%; } }
+@keyframes cbs-backup { to { left: 73.3%; top: 77.8%; } }
+@keyframes cbs-fail { 80% { left: 73.3%; top: 22.2%; background: var(--accent); } to { left: 70%; top: 27%; background: var(--danger); transform: scale(1.6); } }
+.cbs-window { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; margin: 12px 0; font-size: var(--fs-micro); }
+.cbs-cell { display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px; border: 1px solid currentColor; border-radius: 4px; font: 600 11px/1 var(--font-mono); }
+.cbs-window > .wg-faint:first-child { margin-right: 6px; }
+.cbs-window > .wg-mono { margin-left: 6px; }
+.cbs-params { margin-top: 12px; font-size: var(--fs-micro); display: flex; flex-wrap: wrap; gap: 4px 16px; }
+.cbs-params li::before { content: "· "; color: var(--text-faint); }
+@media (prefers-reduced-motion: reduce) { .cbs-dot { display: none; } }

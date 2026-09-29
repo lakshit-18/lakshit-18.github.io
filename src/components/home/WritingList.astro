@@ -1,0 +1,17 @@
+---
+import { getCollection } from 'astro:content';
+import SectionHeading from '../ui/SectionHeading.astro';
+import PostList from '../ui/PostList.astro';
+const posts = (await getCollection('posts', (p) => !p.data.draft)).sort(
+  (a, b) => b.data.date.valueOf() - a.data.date.valueOf(),
+);
+---
+<section id="writing" class="section container reveal" aria-labelledby="writing-h">
+  <SectionHeading id="writing-h" title="Engineering notes" sub="Short write-ups on problems I've actually hit in production." />
+  <PostList posts={posts} />
+  <p class="all"><a href="/blog">All posts →</a></p>
+</section>
+<style>
+  .all { margin-top: 24px; font-weight: 600; font-size: var(--fs-small); }
+  .all a { display: inline-flex; align-items: center; min-height: 44px; }
+</style>

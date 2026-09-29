@@ -1,0 +1,51 @@
+---
+// D-CHK-1: Checkout architecture. Static, theme-aware inline SVG (spec §13). No props.
+---
+<svg id="d-chk-1" viewBox="0 0 960 368" width="100%" role="img" aria-labelledby="d-chk-1-title d-chk-1-desc" style="max-width:960px;height:auto;display:block;margin-inline:auto;color:var(--text-muted)" xmlns="http://www.w3.org/2000/svg">
+  <title id="d-chk-1-title">Checkout architecture</title>
+  <desc id="d-chk-1-desc">The app calls the API gateway, which routes to the checkout service. Checkout fans out to the payment service, which calls the payment-gateway service and then PayU or Razorpay, and to the order-processing service, which writes an idempotency record in DynamoDB before the order store. The gateway's webhook returns to the payment-gateway service, which calls the checkout completion endpoint; this payment path is the highlighted happy path.</desc>
+  <style is:inline>#d-chk-1 text{font-family:var(--font-mono);text-anchor:middle;dominant-baseline:central}#d-chk-1 .t{fill:var(--text);font-size:15px}#d-chk-1 .s{fill:var(--text-muted);font-size:13px}#d-chk-1 .cap{text-anchor:start;text-transform:uppercase;letter-spacing:.08em}#d-chk-1 .b{fill:var(--bg-elev);stroke:currentColor;stroke-opacity:.5;stroke-width:1.5}#d-chk-1 .p{fill:var(--bg-sunk);stroke:var(--border);stroke-width:1.5}#d-chk-1 .l{fill:none;stroke:currentColor;stroke-width:1.5;stroke-linejoin:round}#d-chk-1 .hl{stroke:var(--accent)}#d-chk-1 .d{stroke-dasharray:6 5}#d-chk-1 .ma{fill:currentColor}#d-chk-1 .mah{fill:var(--accent)}#d-chk-1 .ht{fill:var(--accent)}</style>
+  <defs><marker id="d-chk-1-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="ma" d="M0,0 L10,5 L0,10 z"/></marker><marker id="d-chk-1-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="mah" d="M0,0 L10,5 L0,10 z"/></marker></defs>
+  <rect class="b" x="12" y="24" width="156" height="64" rx="8"/>
+  <text class="t" x="90" y="56">App</text>
+  <rect class="b" x="192" y="24" width="156" height="64" rx="8"/>
+  <text class="t" x="270" y="56">API gateway</text>
+  <rect class="b" x="372" y="24" width="156" height="64" rx="8"/>
+  <text class="t" x="450" y="46">Checkout</text>
+  <text class="t" x="450" y="66">service</text>
+  <rect class="b" x="552" y="24" width="156" height="64" rx="8"/>
+  <text class="t" x="630" y="46">Payment</text>
+  <text class="t" x="630" y="66">service</text>
+  <rect class="b" x="12" y="152" width="156" height="64" rx="8"/>
+  <text class="t" x="90" y="184">Order store</text>
+  <rect class="b" x="192" y="152" width="156" height="64" rx="8"/>
+  <text class="t" x="270" y="165">Idempotency</text>
+  <text class="t" x="270" y="185">record</text>
+  <text class="s" x="270" y="204">(DynamoDB)</text>
+  <rect class="b" x="372" y="152" width="156" height="64" rx="8"/>
+  <text class="t" x="450" y="174">Order-</text>
+  <text class="t" x="450" y="194">processing svc</text>
+  <rect class="b" x="552" y="152" width="156" height="64" rx="8"/>
+  <text class="t" x="630" y="174">Payment-</text>
+  <text class="t" x="630" y="194">gateway svc</text>
+  <rect class="b" x="792" y="152" width="156" height="64" rx="8"/>
+  <text class="t" x="870" y="174">PayU /</text>
+  <text class="t" x="870" y="194">Razorpay</text>
+  <rect class="b" x="552" y="280" width="156" height="64" rx="8"/>
+  <text class="t" x="630" y="294">Checkout</text>
+  <text class="s" x="630" y="313">completion</text>
+  <text class="s" x="630" y="331">endpoint</text>
+  <path class="l hl" d="M168,56 L192,56" marker-end="url(#d-chk-1-ah)"/>
+  <path class="l hl" d="M348,56 L372,56" marker-end="url(#d-chk-1-ah)"/>
+  <path class="l hl" d="M528,56 L552,56" marker-end="url(#d-chk-1-ah)"/>
+  <path class="l" d="M450,88 L450,152" marker-end="url(#d-chk-1-a)"/>
+  <path class="l" d="M372,184 L348,184" marker-end="url(#d-chk-1-a)"/>
+  <path class="l" d="M192,184 L168,184" marker-end="url(#d-chk-1-a)"/>
+  <path class="l hl" d="M630,88 L630,152" marker-end="url(#d-chk-1-ah)"/>
+  <path class="l hl" d="M708,168 L792,168" marker-end="url(#d-chk-1-ah)"/>
+  <path class="l hl" d="M792,200 L708,200" marker-end="url(#d-chk-1-ah)"/>
+  <text class="s ht" x="750" y="184" style="text-anchor:middle">webhook</text>
+  <path class="l hl" d="M630,216 L630,280" marker-end="url(#d-chk-1-ah)"/>
+  <path class="l hl" d="M804,56 L852,56" marker-end="url(#d-chk-1-ah)"/>
+  <text class="s" x="864" y="56" style="text-anchor:start">happy path</text>
+</svg>

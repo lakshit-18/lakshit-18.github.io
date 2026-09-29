@@ -1,0 +1,8 @@
+---
+interface Props { size?: number }
+const { size = 28 } = Astro.props;
+---
+<span class="mono-mark" aria-hidden="true" style={`--s:${size}px`}>LL</span>
+<style>
+  .mono-mark { display: inline-grid; place-items: center; width: var(--s); height: var(--s); border-radius: 8px; background: var(--accent); color: var(--bg); font: 700 calc(var(--s) * 0.43)/1 var(--font-mono); letter-spacing: -0.02em; flex: none; }
+</style>

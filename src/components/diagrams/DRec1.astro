@@ -1,0 +1,34 @@
+---
+// D-REC-1: Reconciliation pipeline. Static, theme-aware inline SVG (spec §13). No props.
+---
+<svg id="d-rec-1" viewBox="0 0 960 328" width="100%" role="img" aria-labelledby="d-rec-1-title d-rec-1-desc" style="max-width:960px;height:auto;display:block;margin-inline:auto;color:var(--text-muted)" xmlns="http://www.w3.org/2000/svg">
+  <title id="d-rec-1-title">Reconciliation pipeline</title>
+  <desc id="d-rec-1-desc">A scheduler selects transactions in INITIATED, PROCESSING or REFUND_INITIATED within a time window and enqueues many small messages on an SQS queue; a consumer checks each against the gateway status API and either updates the transaction or raises a P0 alert.</desc>
+  <style is:inline>#d-rec-1 text{font-family:var(--font-mono);text-anchor:middle;dominant-baseline:central}#d-rec-1 .t{fill:var(--text);font-size:15px}#d-rec-1 .s{fill:var(--text-muted);font-size:13px}#d-rec-1 .cap{text-anchor:start;text-transform:uppercase;letter-spacing:.08em}#d-rec-1 .b{fill:var(--bg-elev);stroke:currentColor;stroke-opacity:.5;stroke-width:1.5}#d-rec-1 .p{fill:var(--bg-sunk);stroke:var(--border);stroke-width:1.5}#d-rec-1 .l{fill:none;stroke:currentColor;stroke-width:1.5;stroke-linejoin:round}#d-rec-1 .hl{stroke:var(--accent)}#d-rec-1 .d{stroke-dasharray:6 5}#d-rec-1 .ma{fill:currentColor}#d-rec-1 .mah{fill:var(--accent)}#d-rec-1 .ht{fill:var(--accent)}</style>
+  <defs><marker id="d-rec-1-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="ma" d="M0,0 L10,5 L0,10 z"/></marker><marker id="d-rec-1-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="mah" d="M0,0 L10,5 L0,10 z"/></marker></defs>
+  <rect class="b" x="24" y="36" width="240" height="56" rx="8"/>
+  <text class="t" x="144" y="64">Scheduler</text>
+  <path class="l" d="M264,64 L344,64" marker-end="url(#d-rec-1-a)"/>
+  <rect class="b" x="344" y="24" width="272" height="80" rx="8"/>
+  <text class="t" x="480" y="46">Select in window</text>
+  <text class="s" x="480" y="65">INITIATED / PROCESSING /</text>
+  <text class="s" x="480" y="83">REFUND_INITIATED</text>
+  <path class="l" d="M616,64 L696,64" marker-end="url(#d-rec-1-a)"/>
+  <rect class="b" x="696" y="32" width="240" height="64" rx="8"/>
+  <text class="t" x="816" y="55">SQS queue</text>
+  <text class="s" x="816" y="74">many small messages</text>
+  <path class="l" d="M816,96 L816,204" marker-end="url(#d-rec-1-a)"/>
+  <rect class="b" x="696" y="204" width="240" height="56" rx="8"/>
+  <text class="t" x="816" y="232">Consumer</text>
+  <path class="l" d="M696,232 L616,232" marker-end="url(#d-rec-1-a)"/>
+  <rect class="b" x="344" y="204" width="272" height="56" rx="8"/>
+  <text class="t" x="480" y="232">Gateway status API</text>
+  <path class="l" d="M344,232 L304,232"/>
+  <path class="l" d="M304,188 L304,276"/>
+  <path class="l" d="M304,188 L264,188" marker-end="url(#d-rec-1-a)"/>
+  <path class="l" d="M304,276 L264,276" marker-end="url(#d-rec-1-a)"/>
+  <rect class="b" x="24" y="160" width="240" height="56" rx="8"/>
+  <text class="t" x="144" y="188">Update transaction</text>
+  <rect class="b" x="24" y="248" width="240" height="56" rx="8"/>
+  <text class="t" x="144" y="276">Alert (P0)</text>
+</svg>

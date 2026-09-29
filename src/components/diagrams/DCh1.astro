@@ -1,0 +1,44 @@
+---
+// D-CH-1: ConnectHub architecture. Static, theme-aware inline SVG (spec §13). No props.
+---
+<svg id="d-ch-1" viewBox="0 0 960 504" width="100%" role="img" aria-labelledby="d-ch-1-title d-ch-1-desc" style="max-width:960px;height:auto;display:block;margin-inline:auto;color:var(--text-muted)" xmlns="http://www.w3.org/2000/svg">
+  <title id="d-ch-1-title">ConnectHub architecture</title>
+  <desc id="d-ch-1-desc">A client calls the API Gateway, which validates the JWT and routes to the User, Posts, Connections and Notification services, registered with Eureka. Posts and Connections publish to Kafka, which feeds Notification; User and Posts use PostgreSQL and Connections uses Neo4j.</desc>
+  <style is:inline>#d-ch-1 text{font-family:var(--font-mono);text-anchor:middle;dominant-baseline:central}#d-ch-1 .t{fill:var(--text);font-size:15px}#d-ch-1 .s{fill:var(--text-muted);font-size:13px}#d-ch-1 .cap{text-anchor:start;text-transform:uppercase;letter-spacing:.08em}#d-ch-1 .b{fill:var(--bg-elev);stroke:currentColor;stroke-opacity:.5;stroke-width:1.5}#d-ch-1 .p{fill:var(--bg-sunk);stroke:var(--border);stroke-width:1.5}#d-ch-1 .l{fill:none;stroke:currentColor;stroke-width:1.5;stroke-linejoin:round}#d-ch-1 .hl{stroke:var(--accent)}#d-ch-1 .d{stroke-dasharray:6 5}#d-ch-1 .ma{fill:currentColor}#d-ch-1 .mah{fill:var(--accent)}#d-ch-1 .ht{fill:var(--accent)}</style>
+  <defs><marker id="d-ch-1-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="ma" d="M0,0 L10,5 L0,10 z"/></marker><marker id="d-ch-1-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="mah" d="M0,0 L10,5 L0,10 z"/></marker></defs>
+  <rect class="b" x="304" y="16" width="160" height="48" rx="8"/>
+  <text class="t" x="384" y="40">Client</text>
+  <path class="l" d="M384,64 L384,104" marker-end="url(#d-ch-1-a)"/>
+  <rect class="b" x="284" y="104" width="200" height="64" rx="8"/>
+  <text class="t" x="384" y="127">API Gateway</text>
+  <text class="s" x="384" y="146">(JWT)</text>
+  <path class="l" d="M384,168 L384,200"/>
+  <path class="l" d="M96,200 L672,200"/>
+  <path class="l" d="M96,200 L96,232" marker-end="url(#d-ch-1-a)"/>
+  <rect class="b" x="16" y="232" width="160" height="56" rx="8"/>
+  <text class="t" x="96" y="260">User</text>
+  <path class="l" d="M288,200 L288,232" marker-end="url(#d-ch-1-a)"/>
+  <rect class="b" x="208" y="232" width="160" height="56" rx="8"/>
+  <text class="t" x="288" y="260">Posts</text>
+  <path class="l" d="M480,200 L480,232" marker-end="url(#d-ch-1-a)"/>
+  <rect class="b" x="400" y="232" width="160" height="56" rx="8"/>
+  <text class="t" x="480" y="260">Notification</text>
+  <path class="l" d="M672,200 L672,232" marker-end="url(#d-ch-1-a)"/>
+  <rect class="b" x="592" y="232" width="160" height="56" rx="8"/>
+  <text class="t" x="672" y="260">Connections</text>
+  <rect class="b" x="784" y="232" width="160" height="56" rx="8"/>
+  <text class="t" x="864" y="251">Eureka</text>
+  <text class="s" x="864" y="270">registry</text>
+  <rect class="b" x="400" y="336" width="160" height="56" rx="8"/>
+  <text class="t" x="480" y="364">Kafka</text>
+  <path class="l" d="M480,336 L480,288" marker-end="url(#d-ch-1-a)"/>
+  <path class="l" d="M336,288 L336,364 L400,364" marker-end="url(#d-ch-1-a)"/>
+  <path class="l" d="M624,288 L624,364 L560,364" marker-end="url(#d-ch-1-a)"/>
+  <rect class="b" x="16" y="424" width="352" height="56" rx="8"/>
+  <text class="t" x="192" y="452">PostgreSQL</text>
+  <path class="l" d="M96,288 L96,424" marker-end="url(#d-ch-1-a)"/>
+  <path class="l" d="M272,288 L272,424" marker-end="url(#d-ch-1-a)"/>
+  <rect class="b" x="592" y="424" width="160" height="56" rx="8"/>
+  <text class="t" x="672" y="452">Neo4j</text>
+  <path class="l" d="M688,288 L688,424" marker-end="url(#d-ch-1-a)"/>
+</svg>

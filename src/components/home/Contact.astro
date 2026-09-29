@@ -1,0 +1,21 @@
+---
+import SectionHeading from '../ui/SectionHeading.astro';
+import Button from '../ui/Button.astro';
+import { site } from '../../data/site';
+---
+<section id="contact" class="section container reveal" aria-labelledby="contact-h">
+  <SectionHeading id="contact-h" title="Let's talk" sub="Open to backend and platform engineering roles — payments, distributed systems, and event-driven architecture. The fastest way to reach me is email." />
+  <div class="c-btns">
+    <Button href={`mailto:${site.email}`} size="lg" icon="mail">Email me</Button>
+    <Button href={site.phoneTel} variant="outline" size="lg" icon="phone">Call</Button>
+    <Button href={site.linkedin} variant="outline" size="lg" icon="linkedin" external>LinkedIn</Button>
+    <Button href={site.github} variant="outline" size="lg" icon="github" external>GitHub</Button>
+  </div>
+  <p class="c-plain muted mono">
+    <a href={`mailto:${site.email}`}>{site.email}</a> · <a href={site.phoneTel}>{site.phoneDisplay}</a> · {site.location}
+  </p>
+</section>
+<style>
+  .c-btns { display: flex; flex-wrap: wrap; gap: 12px; }
+  .c-plain { margin-top: 24px; font-size: var(--fs-small); overflow-wrap: anywhere; }
+</style>

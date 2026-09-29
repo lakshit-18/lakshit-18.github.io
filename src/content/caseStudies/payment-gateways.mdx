@@ -1,0 +1,77 @@
+---
+title: "Payment Gateways — PayU & Razorpay"
+slug: "payment-gateways"
+order: 2
+tagline: "One gateway abstraction, six payment channels, and a new gateway is one strategy class away."
+role: "SDE 1 – Backend (Java)"
+period: "Jan 2024 – Present"
+status: "Production"
+stack: ["Java", "Dropwizard", "MySQL", "Redis", "REST", "Datadog"]
+metrics:
+  - { value: "~563K", label: "payment orders / month" }
+  - { value: "99.56%", label: "order-creation success" }
+  - { value: "99.8%", label: "payment completion (~21K / month)" }
+  - { value: "6", label: "payment channels" }
+summary: "One gateway abstraction, six payment channels, and a new gateway is one strategy class away."
+ogTitle: "Payment Gateways — PayU & Razorpay"
+ogSubtitle: "~563K payment orders / month · 99.56% order-creation success"
+---
+import Callout from '../../components/ui/Callout.astro';
+import Figure from '../../components/ui/Figure.astro';
+import ChipList from '../../components/ui/ChipList.astro';
+import WebhookRaceTimeline from '../../components/widgets/WebhookRaceTimeline.tsx';
+import DPg1 from '../../components/diagrams/DPg1.astro';
+
+## Context
+
+All money movement goes through a single payment-gateway service. Checkout, credit repayments and delivery-time collections all call it to create payment orders, and it handles completion, status checks, refunds and callbacks. It integrates PayU, Razorpay, Cashfree and BharatPe, plus in-app UPI.
+
+## The problem
+
+Each gateway has its own API, statuses, hashing or signing, callback format and quirks. Callers such as checkout and credit should not care which gateway is in use. Payments must also complete correctly when the app and the gateway's webhook both try to finish the same payment, when callbacks arrive late, or when they arrive twice.
+
+## Constraints
+
+- Adding or swapping a gateway must not require changes in calling services.
+- Merchant secrets must stay server-side.
+- Completion must be safe under concurrency and at-least-once callbacks.
+- Different tenants use different gateway accounts.
+
+## Design
+
+- **Strategy + Factory.** Every gateway implements one transaction-strategy interface: create order, complete order, check status, refund, refund status, payment link, QR. A factory picks the strategy for each transaction. Callers speak one internal contract and statuses are normalized, so a new gateway ships as one strategy class.
+- **Per-tenant credentials.** Stored encrypted (AES) and resolved per client at call time.
+- **PayU.** SHA-512 request hashing (payment, mobile-SDK and VAS hashes) and a server-side dynamic-hash API, so the merchant salt never reaches the client. The app receives only the hashes it needs. Amounts are converted from paisa to PayU's rupee format with fixed scale and rounding.
+- **Razorpay.** Six channels in one integration: orders, UPI intent, single-use dynamic UPI QR, 24-hour payment links, eNACH recurring mandates, and refunds. Orders are created in paisa with our transaction id as the receipt.
+- **Safe completion.** Completing a payment takes a **Redis distributed lock** keyed on the payment, **polls the gateway with backoff (up to 9 attempts)** until a terminal status, then **captures** the payment if it is only authorized. This is deferred capture.
+- **Audit-first S2S webhooks.** Every raw callback is **persisted in its own isolated transaction before any validation**, so there is always a record of exactly what the gateway sent. Then mandatory fields are validated, the status is mapped, and a **terminal-state guard** stops a late or duplicate callback from downgrading a payment that already succeeded.
+- **Late-callback and anomaly alerts.** A P0 alert fires if an authorization webhook arrives more than 15 minutes late, and if an order ever shows both a success and a refund.
+
+<Figure caption="The app and the webhook race to complete the same payment. The lock and the terminal-state guard make the outcome deterministic."><WebhookRaceTimeline client:visible /></Figure>
+
+<Figure caption="Gateway strategy abstraction"><DPg1 /></Figure>
+
+## Key decisions & trade-offs
+
+<Callout variant="tradeoff" title="Normalize statuses at the edge">Every gateway's vocabulary (success, captured, authorized, paid, pending, failed…) maps to one internal status set. Callers never branch on gateway.</Callout>
+
+<Callout variant="tradeoff" title={'Poll on completion even when the app says "paid"'}>The app's word is a hint, not proof, so the server confirms with the gateway. The trade-off is added latency on the completion call, which is bounded by the retry budget.</Callout>
+
+<Callout variant="tradeoff" title="Persist the raw payload before validating">Even malformed callbacks are recoverable and auditable. The trade-off is a little extra write volume.</Callout>
+
+## Results
+
+- **~563K payment orders/month** created at **99.56%** success.
+- **99.8%** success across **~21K payment completions/month**.
+- **~325K** Razorpay webhook events/month and **~18K** PayU callbacks/month processed.
+- **~130K** PayU hash-signing requests/month served at 100% availability.
+
+## What I'd do next
+
+- Make every webhook path verify the gateway's signature and bind the paid amount and order id to our transaction before accepting it. That is the next hardening step for the whole gateway layer.
+- Replace the lock's check-then-set with an atomic `SET NX PX` plus token-checked release.
+- Move polling off the request thread.
+
+## Tech used
+
+<ChipList items={["Java", "Dropwizard", "MySQL", "Redis", "PayU", "Razorpay", "Cashfree", "Datadog"]} label="Tech used" />
